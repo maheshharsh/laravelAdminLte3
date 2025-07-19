@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\PermissionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
@@ -19,7 +21,12 @@ Route::middleware('auth')->prefix($UrlPrefix)->as('admin.')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('permissions', PermissionController::class);
+
+    Route::resources([
+        'users' => UsersController::class,
+        'roles' => RoleController::class,
+        'permissions' => PermissionController::class ,
+    ]);
 });
 
 require __DIR__.'/auth.php';

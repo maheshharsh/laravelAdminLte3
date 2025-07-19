@@ -20,16 +20,17 @@ class PermissionController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            if (!Auth::check()) {
-                return response()->json(['message' => 'Unauthorized'], 401);
-            }
-            $selectCol = 'permissions.' . Permission::ID . ',' . 'permissions.' . Permission::NAME . ' as code_name';
-            $permission = Permission::selectRaw($selectCol)->orderBy(Permission::ID);
+        if (!Auth::check()) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        $selectCol = 'permissions.' . Permission::ID . ',' . 'permissions.' . Permission::NAME . ' as code_name';
+        $permission = Permission::selectRaw($selectCol)->orderBy(Permission::ID);
+        
+        $canView = Gate::allows(Permission::VIEW_PERMISSION);
+        $canUpdate = Gate::allows(Permission::UPDATE_PERMISSION);
+        $canDelete = Gate::allows(Permission::DELETE_PERMISSION);
 
-            $canView = Gate::allows(Permission::VIEW_PERMISSION);
-            $canUpdate = Gate::allows(Permission::UPDATE_PERMISSION);
-            $canDelete = Gate::allows(Permission::DELETE_PERMISSION);
+        if ($request->ajax()) {
 
             return Datatables::of($permission)
                 ->filterColumn('name', function ($query, $keyword) {
@@ -45,12 +46,12 @@ class PermissionController extends Controller
                 })
                 ->editColumn('action', function ($permission) use ($canView, $canUpdate, $canDelete) {
                     $action = '';
-                    if ($canUpdate) {
+                    // if ($canUpdate) {
                         $action .= '<a href="' . route('admin.permissions.edit', $permission->id) . '"> <i class="fa fa-edit"></i> </a>';
-                    }
-                    if ($canDelete) {
+                    // }
+                    // if ($canDelete) {
                         $action .= "<a href='#' class='delete' title='Delete' data-id='$permission->id'> <i class='fa fa-trash'></i> </a>";
-                    }
+                    // }
 
                     return $action;
                 })
@@ -142,12 +143,12 @@ class PermissionController extends Controller
 
     public function getRolePermission(Request $request)
     {
-        // $role = Role::find($request->roleId);
-        // // if ($role->name == Role::SUPER_ADMIN) {
-        // //     return response()->json($role->name);
-        // // }
-        // $permissions = Permission::whereNotIn('id', $role->permissions->pluck(Permission::ID))->get();
+        $role = Role::find($request->roleId);
+        if ($role->name == Role::SUPER_ADMIN) {
+            return response()->json($role->name);
+        }
+        $permissions = Permission::whereNotIn('id', $role->permissions->pluck(Permission::ID))->get();
 
-        // return response()->json($permissions);
+        return response()->json($permissions);
     }
 }

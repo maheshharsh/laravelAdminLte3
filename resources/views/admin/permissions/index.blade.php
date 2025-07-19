@@ -7,7 +7,7 @@
 @section('contentheader_btn')
 {{-- @can('create_permission') --}}
 <a href="{{ route('admin.permissions.create') }}" class="btn btn-success btn-add-new">
-    <i class="fa fa-plus-circle"></i>&nbsp; <span> {{__('addnew')}} </span>
+    <i class="fa fa-plus-circle"></i>&nbsp; <span> {{__('Add N ew')}} </span>
 </a>
 {{-- @endcan --}}
 @endsection
@@ -77,9 +77,11 @@
                 cell.innerHTML = i+1;
             });
         }).draw();
+        var baseUrl = "{{ url('admin/permissions') }}";
 
         $("#permissions_table").on('click', '.delete', function() {
             var id = $(this).data('id');
+            var url = baseUrl + '/' + id;
             $("#delete_form").attr("action", url);
             $("#delete_modal").modal("show");
         });
