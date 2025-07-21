@@ -23,6 +23,7 @@ class UsersController extends Controller
         // $this->middleware('permission:delete_user', ['only' => ['destroy']]);
         // $this->middleware('permission:view_user',   ['only' => ['show']]);
     }
+    
     /**
      * Display a listing of the resource.
      */
@@ -39,7 +40,7 @@ class UsersController extends Controller
     {
         $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->get();
         $permissions = Permission::select(Permission::ID, Permission::NAME)->orderBy(Permission::ID)->get();
-        return view('admin.users.add-edit', compact('roles','permissions','countries'));
+        return view('admin.users.add-edit', compact('roles','permissions'));
     }
 
     /**
@@ -54,23 +55,22 @@ class UsersController extends Controller
                 $filePath = CommonHelper::uploadFile($image, config('constants.upload_path.users_img'));
                 $request->merge(['profile_image' => $filePath]);
             }
-    
+            
             // Hash the password before saving
             $request->merge(['password' => Hash::make($request->password)]);
-    
+            
             // Create the user
             $user = User::create($request->all());
-    
-            // Assign role
+            
+            // Assign role   
             if ($request->filled('role')) {
                 $user->assignRole($request->role);
             }
-    
+            
             // Assign permissions if any
             if ($request->filled('permission')) {
                 $user->givePermissionTo($request->permission);
             }
-    
             return redirect()
                 ->route('admin.users.index')
                 ->with('success', __("User \"{$user->name}\" added successfully."));
@@ -105,17 +105,14 @@ class UsersController extends Controller
         $loggedin_user_role = Auth::User()->roles->first()->id ;
         $user_edit = $user->roles->first()->id ;
 
-        // if($loggedin_user_role == Role::ADMIN){
-        //     $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->whereNot(Role::ID,Role::SUPER_ADMIN)->get();
-        // };
-        // if($loggedin_user_role == Role::ADMIN && $user_edit == Role::SUPER_ADMIN){
-        //     $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->where(Role::ID,Role::SUPER_ADMIN)->get();
-        // }
+        if($loggedin_user_role == Role::ADMIN){
+            $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->whereNot(Role::ID,Role::SUPER_ADMIN)->get();
+        };
+        if($loggedin_user_role == Role::ADMIN && $user_edit == Role::SUPER_ADMIN){
+            $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->where(Role::ID,Role::SUPER_ADMIN)->get();
+        }
 
-        $countries = Country::select(Country::ID, Country::NAME)->get();
-        $stateCites = Country::getStatesAndCities($user);
-
-        return view('admin.users.add-edit', compact('user','roles','countries','stateCites'));
+        return view('admin.users.add-edit', compact('user','roles'));
     }
 
     /**
@@ -127,7 +124,9 @@ class UsersController extends Controller
         if ($request->file('image')) {
             $image = $request->file('image');
             $filePath = CommonHelper::uploadFile($image, config('constants.upload_path.users_img'));
-            Storage::delete($user->profile_image);
+            if ($user->profile_image){
+                Storage::delete($user->profile_image);
+            }
             $request->merge(['profile_image' => $filePath]);
         }
         if ($request->password && $request->password_confirmation) {

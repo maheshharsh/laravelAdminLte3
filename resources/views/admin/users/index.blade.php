@@ -41,15 +41,15 @@
                     <td>{{ $user->email ?? config('constants.empty_value') }}</td>
                     <td>{{ $user->getRoleNames()->first() }}</td>
                     <td class="action-column">
-                        @can('view_user')
+                        {{-- @can('view_user') --}}
                             <a href="{{ route('admin.users.show', $user->id) }}" title="View"><i class="fa fa-eye"></i></a>
-                        @endcan
-                        @can('update_user')
+                        {{-- @endcan
+                        @can('update_user') --}}
                             <a href="{{ route('admin.users.edit', $user->id) }}" title="Edit"><i class="fa fa-edit"></i></a>
-                        @endcan
-                        @can('delete_user')
+                        {{-- @endcan
+                        @can('delete_user') --}}
                             <a href="#" class="delete" title="Delete" data-id="{{ $user->id }}" title="Delete"><i class="fa fa-trash"></i></a>
-                        @endcan
+                        {{-- @endcan --}}
                     </td>
                 </tr>
                 @endforeach

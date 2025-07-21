@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\PermissionController;
@@ -12,6 +13,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::get('admin/dashboard', function () {
     return view('admin.dashboard');
 })->middleware(['auth', 'verified'])->name('admin.dashboard');
@@ -20,7 +22,9 @@ Route::middleware('auth')->prefix($UrlPrefix)->as('admin.')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
+    
+    Route::get('file/serve/{file_path}', [HomeController::class, 'fileServe'])->where('file_path', '(.*)')->name('file.serve');
+    Route::post('/get-additional-permission', [PermissionController::class, 'getRolePermission'])->name('getRolePermission');
 
     Route::resources([
         'users' => UsersController::class,

@@ -45,12 +45,12 @@ class RoleController extends Controller
             return Datatables::of($role)
                 ->editColumn('action', function ($role) use ($canView, $canUpdate, $canDelete) {
                     $action = '';
-                    if ($canUpdate) {
+                    // if ($canUpdate) {
                         $action .= '<a href="'.route('admin.roles.edit', $role->id).'"> <i class="fa fa-edit"> </i></a>';
-                    }
-                    if ($canDelete) {
+                    // }
+                    // if ($canDelete) {
                         $action .= "<a href='#' class='delete' title='Delete' data-id='$role->id'> <i class='fa fa-trash'></i> </a>";
-                    }
+                    // }
 
                     return $action;
                 })
@@ -69,7 +69,6 @@ class RoleController extends Controller
     public function create()
     {
         // $this->middleware(['permission:create_role']);
-
         $permissions = Permission::all();
 
         return view('admin.roles.add-edit', compact('permissions'));
@@ -84,22 +83,22 @@ class RoleController extends Controller
     {
         // $this->middleware(['permission:create_role']);
         
-        // $role = new Role();
-        // DB::transaction(function () use ($request, &$role) {
-        //     $role = $role->create($request->validated());
+        $role = new Role();
+        DB::transaction(function () use ($request, &$role) {
+            $role = $role->create($request->validated());
 
-        //     if ($request->has('permissions')) {
-        //         $role->permissions()->sync($request->permissions);
-        //     }
-        // });
-        // /* $role = Role::firstOrCreate(['name' => $request->name]); */
+            if ($request->has('permissions')) {
+                $role->permissions()->sync($request->permissions);
+            }
+        });
+        /* $role = Role::firstOrCreate(['name' => $request->name]); */
 
-        // if ($role) {
-        //     return redirect()->route('admin.roles.index')->with('success',"Role \"$role->name\" added successfully");
-        // }
-        // else {
-        //     return redirect()->back()->withErrors(__('message.somethingwrong'))->withInput();
-        // }
+        if ($role) {
+            return redirect()->route('admin.roles.index')->with('success',"Role \"$role->name\" added successfully");
+        }
+        else {
+            return redirect()->back()->withErrors(__('message.somethingwrong'))->withInput();
+        }
     }
 
     /**
@@ -137,22 +136,22 @@ class RoleController extends Controller
     {
         // $this->middleware(['permission:update_role']);
 
-        // DB::transaction(function () use ($request, $role) {
-        //     $role->update($request->all());
-        //     if ($request->has('permissions')) {
-        //         $role->permissions()->sync($request->permissions);
-        //     }
-        //     else {
-        //         $role->permissions()->sync([]);
-        //     }
-        // });
+        DB::transaction(function () use ($request, $role) {
+            $role->update($request->all());
+            if ($request->has('permissions')) {
+                $role->permissions()->sync($request->permissions);
+            }
+            else {
+                $role->permissions()->sync([]);
+            }
+        });
 
-        // if ($role) {
-        //     return redirect()->route('admin.roles.index')->with('success',"Role \"$role->name\" updated successfully");;
-        // }
-        // else {
-        //     return redirect()->back()->withErrors(__('message.somethingwrong'))->withInput();
-        // }
+        if ($role) {
+            return redirect()->route('admin.roles.index')->with('success',"Role \"$role->name\" updated successfully");;
+        }
+        else {
+            return redirect()->back()->withErrors(__('message.somethingwrong'))->withInput();
+        }
     }
 
     /**

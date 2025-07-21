@@ -41,8 +41,6 @@
 @endsection
 
 @section('javascript')
-<script src="{{ asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-
 <script type="text/javascript">
     $(document).ready(function() {
         var table = $("#permissions_table").DataTable({

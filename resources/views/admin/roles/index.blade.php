@@ -5,11 +5,11 @@
 @section('contentheader_title', __('Role'))
 
 @section('contentheader_btn')
-    {{-- @can('create_role') --}}
+    @can('create_role')
         <a href="{{ route('admin.roles.create') }}" class="btn btn-success btn-add-new">
             <i class="fa fa-plus-circle"></i>&nbsp; <span>{{ __('Add New') }}</span>
         </a>
-    {{-- @endcan --}}
+    @endcan
 @endsection
 
 @section('content')

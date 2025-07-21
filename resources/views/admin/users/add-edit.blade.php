@@ -48,40 +48,7 @@
                         @endforeach
                     </select>
                 </div>
-                <!-- Country -->
-                <div class="form-group col-md-6">
-                    <label for="country" class="requiredField" >{{ __("Country") }}</label>
-                    <select class="form-control select2" name="country" id="country" >
-                        <option value="" selected disabled >{{ __('message.please_select') }}</option>
-                        @foreach($countries as $country)
-                            <option value="{{ $country->id }}" @if(old('country') == $country->id || (isset($user->country) && ($user->country == $country->id))){{ "selected" }}@endif>{{ $country->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <!-- State -->
-                <div class="form-group col-md-6">
-                    <label for="state" class="requiredField">{{ __("State") }}</label>
-                    <select class="form-control select2" name="state" id="state" >
-                        <option value="" selected disabled >{{ __('message.please_select') }}</option>
-                        @if(isset($stateCites['states']))
-                            @foreach($stateCites['states'] as $state)
-                                <option value="{{ $state['id'] }}" @if(old('user.state') == $state['id'] || (isset($user->state) && ($user->state == $state['id']))){{ "selected" }}@endif>{{ $state['name'] }}</option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
-                <!-- City -->
-                <div class="form-group col-md-6">
-                    <label for="city" class="requiredField">{{ __("City") }}</label>
-                    <select class="form-control select2" name="city" id="city" >
-                        <option value="" selected disabled >{{ __('message.please_select') }}</option>
-                        @if(isset($stateCites['cities']))
-                            @foreach($stateCites['cities'] as $cities)
-                                <option value="{{ $cities['id'] }}" @if(old('user.city') == $cities['id'] || (isset($user->city) && ($user->city == $cities['id']))){{ "selected" }}@endif>{{ $cities['name'] }}</option>
-                            @endforeach
-                        @endif
-                    </select>
-                </div>
+        
                 <!-- Status -->
                 <div class="form-group col-md-6">
                     <label for="status" class="requiredField" >{{ __('Status') }}</label>
@@ -96,12 +63,12 @@
                 <div class="form-group col-md-6">
                     <label for="role" class="requiredField" >{{ __('Role') }}</label>
                         @php
-                            $currentRole = old('role') ? [old('role')] : (isset($user->roles) ? $user->roles->pluck('id')->toArray() : []);
+                            $currentRole = old('role') ? [old('role')] : (isset($user->roles) ? $user->roles->pluck('id, name')->toArray() : []);
                         @endphp
                         <select name="role" class="form-control select2-withoutsearch" id="role">
                             <option value="" selected disabled >{{ __('message.please_select') }}</option>
                             @foreach($roles->toArray() as $role)
-                                <option value="{{ $role['id'] }}" @if(in_array($role['id'], $currentRole)){{ "selected" }}@endif>{{ $role['name'] }}</option>
+                                <option value="{{ $role['name'] }}" @if(in_array($role['id'], $currentRole)){{ "selected" }}@endif>{{ $role['name'] }}</option>
                             @endforeach
                     </select>
                 </div>
@@ -181,73 +148,6 @@
             width: '100%'
         });
 
-        /* function for on change state, city */
-        $('#country').on('change', function() {
-            states();
-        });
-        $('#state').on('change', function() {
-            cities();
-        });
-        /* working for (old()) values  */
-        var stateId = "<?= old('state') != null ? old('state') : '' ?>";
-        var cityId = "<?= old('city') != null ? old('city') : '' ?>";
-        if (stateId) {
-            states(stateId);
-            cities(stateId,cityId);
-        }
-        function states(stateId = false) {
-            var country_id = $('#country').val();
-            $('#state').html('');
-            $.ajax({
-                url: "{{ route('getState')}}",
-                type: "post",
-                dataType : 'json',
-                data: {
-                    country_id: country_id,
-                    _token: '{{csrf_token()}}'
-                },
-                success: function(result){
-                    $('#state').html('<option value="">{{ __("user.select_state") }}</option>');
-                    $.each(result.states,function(key,value){
-                        var selected = '';
-                        if (value.id == stateId){
-                            var selected = 'selected';
-                        }
-                        $('#state').append('<option value="'+value.id+'"' + selected + '>'+value.name+'</option>');
-                    });
-                    $('#city').html('<option value="">{{ __("user.select_state_first") }}</option>');
-                }
-            });
-        }
-        function cities(stateId = false , cityId = false) {
-            var state_id = '';
-            if (stateId) {
-                state_id = stateId;
-            } else {
-                state_id = $('#state').val();
-            }
-            $('#city').html('');
-            $.ajax({
-                url:"{{ route('getCity') }}",
-                type: "post",
-                data: {
-                    state_id: state_id,
-                    _token: '{{csrf_token()}}'
-                },
-                dataType : 'json',
-                success: function(result){
-                    $('#city').html('<option value="">{{ __("user.select_city") }}</option>');
-                    $.each(result.cities,function(key,value){
-                        var selected = '';
-                        if (value.id == cityId){
-                            var selected = 'selected';
-                        }
-                        $('#city').append('<option value="'+value.id+'" ' + selected + '>'+value.name+'</option>');
-                    });
-                }
-            });
-        }
-
         $('#role').on('change', function() {
             additionalPermission();
         });
@@ -263,7 +163,7 @@
                 }
             }
             $.ajax({
-                url: "{{ route('getRolePermission') }}",
+                url: "{{ route('admin.getRolePermission') }}",
                 type: "post",
                 dataType: 'json',
                 data: {
