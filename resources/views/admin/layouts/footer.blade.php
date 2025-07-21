@@ -19,6 +19,8 @@
     <script>
         $.widget.bridge('uibutton', $.ui.button)
     </script>
+    {{-- datatable --}}
+    <script src="{{ asset('admin/plugins/datatables/jquery.dataTables.min.js') }}"></script>
     <!-- Bootstrap 4 -->
     <script src="{{ asset('admin/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <!-- ChartJS -->

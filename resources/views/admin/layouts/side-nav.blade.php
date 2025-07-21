@@ -31,6 +31,24 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="{{ route('admin.users.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tree"></i>
+                        <p>Users</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.permissions.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tree"></i>
+                        <p>Permissions</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.roles.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tree"></i>
+                        <p>Roles</p>
+                    </a>
+                </li>
+                {{-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-edit"></i>
                         <p>
@@ -93,14 +111,14 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="{{ route('admin.profile.edit') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
                         <p>Profile</p>
                     </a>
-                </li>
+                </li> --}}
                 <li class="nav-item">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
