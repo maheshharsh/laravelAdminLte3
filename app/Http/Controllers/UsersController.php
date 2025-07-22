@@ -23,7 +23,6 @@ class UsersController extends Controller
         // $this->middleware('permission:delete_user', ['only' => ['destroy']]);
         // $this->middleware('permission:view_user',   ['only' => ['show']]);
     }
-    
     /**
      * Display a listing of the resource.
      */
@@ -103,7 +102,7 @@ class UsersController extends Controller
         $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->get();
 
         $loggedin_user_role = Auth::User()->roles->first()->id ;
-        $user_edit = $user->roles->first()->id ;
+        $user_edit = Role::where(Role::NAME, $user->role)->first()->id ;
 
         if($loggedin_user_role == Role::ADMIN){
             $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->whereNot(Role::ID,Role::SUPER_ADMIN)->get();
