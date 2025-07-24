@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class UsersController extends Controller
@@ -76,7 +77,7 @@ class UsersController extends Controller
     
         } catch (\Exception $e) {
             // Optionally log the error
-            \Log::error('User creation failed: ' . $e->getMessage());
+            Log::error('User creation failed: ' . $e->getMessage());
     
             return redirect()
                 ->back()

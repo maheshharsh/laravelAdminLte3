@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\HeadlineController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UsersController;
@@ -30,6 +33,9 @@ Route::middleware('auth')->prefix($UrlPrefix)->as('admin.')->group(function () {
         'users' => UsersController::class,
         'roles' => RoleController::class,
         'permissions' => PermissionController::class ,
+        'headlines' => HeadlineController::class ,
+        'categories' => CategoryController::class ,
+        'comments' => CommentController::class ,
     ]);
 });
 
