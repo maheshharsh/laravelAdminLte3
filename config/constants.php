@@ -10,7 +10,7 @@ return[
         'customer_img_profile' => 'customer/images',
         'service_img' => 'service-images',
         'users_img' => 'user-images',
-        'barbers_img' => 'barber-images',
+        'adv_img' => 'advertisement-images',
         'parlour_img' => 'parlour-images',
     ],
 
