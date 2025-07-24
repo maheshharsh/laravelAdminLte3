@@ -1,71 +1,70 @@
 @extends('admin.layouts.app')
 
-@section('page_title', __('message.category'))
+@section('page_title', __('Categories'))
 
-@section('contentheader_title', __('message.category'))
+@section('contentheader_title', __('Categories'))
 
 @section('contentheader_btn')
-@can('create_category')
-<a href="{{ route('admin.category.create') }}" class="btn btn-success btn-add-new">
-    <i class="fa fa-plus-circle"></i>&nbsp; <span>{{ __('message.addnew') }}</span>
+{{-- @can('create_permission') --}}
+<a href="{{ route('admin.categories.create') }}" class="btn btn-success btn-add-new">
+    <i class="fa fa-plus-circle"></i>&nbsp; <span> {{__('Add New')}} </span>
 </a>
-@endcan
+{{-- @endcan --}}
 @endsection
 
 @section('content')
     <div class="card-body">
-        <table id="category_table" class="table table-bordered table-striped w-100">
+        <table id="categories_table" class="table table-bordered table-striped w-100">
             <thead>
                 <tr>
                     <th></th>
                     <th>{{ __('Name') }}</th>
+                    <th>{{ __('Slug') }}</th>
                     <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
             <thead>
                 <tr>
                     <td></td>
-                    <td><input type="text" class="form-control" placeholder="{{__('Name')}}" data-index="1" /></td>
+                    <td><input type="text" class="form-control" placeholder="{{ __('Name') }}" data-index="1" /></td>
+                    <td><input type="text" class="form-control" placeholder="{{ __('Slug') }}" data-index="2" /></td>
                     <td></td>
                 </tr>
             </thead>
-            <tbody>
-                @foreach($categories as $category)
-                <tr>
-                    <td></td>
-                    <td>{{ $category->name }}</td>
-                    <td class="action-column">
-                        @can('view_category')
-                            <a href="{{ route('admin.category.show', $category->id) }}" title="View"><i class="fa fa-eye"></i></a>
-                        @endcan
-                        @can('update_category')
-                            <a href="{{ route('admin.category.edit', $category->id) }}" title="Edit"><i class="fa fa-edit"></i></a>
-                        @endcan
-                        @can('delete_category')
-                            <a href="#" class="delete" title="Delete" data-id="{{ $category->id }}" title="Delete"><i class="fa fa-trash"></i></a>
-                        @endcan
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
 
 <!-- Include delete modal popup. -->
-@include('admin.layouts.delete-modal', ['name' => 'category'])
+@include('admin.layouts.delete-modal', ['name' => 'Category' ])
 
 @endsection
 
 @section('javascript')
 <script type="text/javascript">
     $(document).ready(function() {
-        var table = $('#category_table').DataTable({
+        var table = $("#categories_table").DataTable({
             scrollX: true,
             columnDefs: [
-                {"orderable": false, "targets": [0,2]},
+                {"orderable": false, "targets": [0, 3]},
                 {"className": "serial-no", "targets": [0]},
             ],
+            ajax: {
+                url: "{{ route('admin.categories.index') }}",
+                error: function (xhr, error, thrown) {
+                    if (xhr.status === 401) {
+                        window.location.href = "{{ route('login') }}"; // Redirect to the login page for unauthorized access
+                    }
+                }
+            },
+            columns: [
+                {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
+                {data: 'name', name: 'name'},
+                {data: 'slug', name: 'slug'},
+                {data: 'action', name: 'action' , orderable: false, searchable: false},
+            ],
         });
+
         $(table.table().container()).on('keyup', 'thead input', function () {
             table.column($(this).data('index'))
             .search(this.value)
@@ -76,10 +75,11 @@
                 cell.innerHTML = i+1;
             });
         }).draw();
+        var baseUrl = "{{ url('admin/categories') }}";
 
-        $("#category_table").on("click", ".delete", function() {
+        $("#categories_table").on('click', '.delete', function() {
             var id = $(this).data('id');
-            var url = "{{ route('admin.category.destroy', '') }}" + "/" + id;
+            var url = baseUrl + '/' + id;
             $("#delete_form").attr("action", url);
             $("#delete_modal").modal("show");
         });
