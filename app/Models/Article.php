@@ -12,6 +12,7 @@ class Article extends Model
 {
     use SoftDeletes;
 
+      const  ID                 =         'id';
       const  TITLE              =         'title';
       const  SLUG               =         'slug';
       const  SUBCONTENT         =         'sub_content';
@@ -46,6 +47,15 @@ class Article extends Model
         self::ISPUBLISHED => 'boolean',
     ];
 
+    /*
+     * Constants for Article.
+     */
+    const BROWSE_ARTICLE = 'browse_article';
+    const VIEW_ARTICLE = 'view_article';
+    const CREATE_ARTICLE = 'create_article';
+    const UPDATE_ARTICLE = 'update_article';
+    const DELETE_ARTICLE = 'delete_article';
+
     protected $appends = ['category_name', 'image'];
 
     /**
@@ -64,7 +74,7 @@ class Article extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function author(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }
@@ -90,8 +100,8 @@ class Article extends Model
         return $this->featured_image ? asset('/storage/' . $this->featured_image) : null;
     }
 
-    public function getPublishedAtAttribute($value): ?string
-    {
-        return $value ? date("d M Y", strtotime($value)) : null;
-    }
+    // public function getPublishedAtAttribute($value): ?string
+    // {
+    //     return $value ? date("d M Y", strtotime($value)) : null;
+    // }
 }

@@ -15,7 +15,7 @@ class Role extends \Spatie\Permission\Models\Role
      * Constants for role permissions.
      */
     const BROWSE_ROLE = 'browse_role';
-    const VIEW_ROLE = 'view_role';
+    const VIEW_ROLE   = 'view_role';
     const CREATE_ROLE = 'create_role';
     const UPDATE_ROLE = 'update_role';
     const DELETE_ROLE = 'delete_role';

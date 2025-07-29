@@ -63,7 +63,13 @@
                 <li class="nav-item">
                     <a href="{{ route('admin.advertisements.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
-                        <p>Advertisement</p>
+                        <p>Advertisements</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.articles.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tree"></i>
+                        <p>Articles</p>
                     </a>
                 </li>
                 {{-- <li class="nav-item">

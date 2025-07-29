@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdvertisementController;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\HeadlineController;
@@ -38,6 +39,7 @@ Route::middleware('auth')->prefix($UrlPrefix)->as('admin.')->group(function () {
         'categories' => CategoryController::class ,
         'comments' => CommentController::class ,
         'advertisements' => AdvertisementController::class ,
+        'articles' => ArticleController::class ,
     ]);
 });
 

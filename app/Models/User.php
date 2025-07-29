@@ -45,6 +45,16 @@ class User extends Authenticatable
     const USER_STATUS_ACTIVE = 1;
     const USER_STATUS_INACTIVE = 2;
 
+    
+ /*
+     * Constants for permissions's permissions.
+     */
+    const BROWSE_USER = 'browse_user';
+    const VIEW_USER   = 'view_user';
+    const CREATE_USER = 'create_user';
+    const UPDATE_USER = 'update_user';
+    const DELETE_USER = 'delete_user';
+
     /**
      * The attributes that are mass assignable.
      *

@@ -2,17 +2,74 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\CommonHelper;
 use App\Models\Article;
+use App\Models\Category;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use App\Models\Media;
 
 class ArticleController extends Controller
 {
+    public function __construct()
+    {
+        // $this->middleware(['permission:browse_user']);
+        // $this->middleware('permission:create_user', ['only' => ['create', 'store']]);
+        // $this->middleware('permission:update_user', ['only' => ['update', 'edit']]);
+        // $this->middleware('permission:delete_user', ['only' => ['destroy']]);
+        // $this->middleware('permission:view_user',   ['only' => ['show']]);
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if (!Auth::check()) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        $selectCol = 'articles.' . Article::ID . ',' . 'articles.' . Article::TITLE. ',' . 'articles.' . Article::PUBLISHEDAT. ',' . 'articles.' . Article::ISFEATURED. ',' . 'articles.' . Article::ISPUBLISHED. ',' . 'articles.' . Article::ISCAROUSEL. ',' . 'articles.' . Article::SLUG. ',' . 'articles.' . Article::SUBCONTENT;
+        $article = Article::selectRaw($selectCol)->orderBy(Article::ID);
+        
+        $canView = Gate::allows(Article::VIEW_ARTICLE);
+        $canUpdate = Gate::allows(Article::UPDATE_ARTICLE);
+        $canDelete = Gate::allows(Article::DELETE_ARTICLE);
+
+        if ($request->ajax()) {
+
+            return Datatables::of($article)
+                ->filterColumn('title', function ($query, $keyword) {
+                    $sql = "articles.title like ?";
+                    $query->whereRaw($sql, ["%{$keyword}%"]);
+                })
+                // ->filterColumn('category_id', function ($query, $keyword) {
+                //     $sql = "headlines.category_id like ?";
+                //     $query->whereRaw($sql, ["%{$keyword}%"]);
+                // })
+                ->editColumn('action', function ($article) use ($canView, $canUpdate, $canDelete) {
+                    $action = '';
+                    // if ($canUpdate) {
+                        $action .= '<a href="' . route('admin.articles.edit', $article->id) . '"> <i class="fa fa-edit"></i> </a>';
+                    // }
+                    // if ($canView) {
+                        $action .= '<a href="' . route('admin.articles.show', $article->id) . '"> <i class="fa fa-eye"></i> </a>';
+                    // }
+                    // if ($canDelete) {
+                        $action .= "<a href='#' class='delete' title='Delete' data-id='$article->id'> <i class='fa fa-trash'></i> </a>";
+                    // }
+
+                    return $action;
+                })
+                ->addIndexColumn()
+                ->make(true);
+        }
+        return view('admin.article.index');
     }
 
     /**
@@ -20,7 +77,10 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        //
+        $categories = Category::all();
+        $users = User::all();
+
+        return view('admin.article.add-edit', compact('categories', 'users'));
     }
 
     /**
@@ -28,7 +88,49 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            // Handle featured image
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $filePath = CommonHelper::uploadFile($image, config('constants.upload_path.article.featured_image'));
+                $request->merge(['featured_image' => $filePath]);
+            }
+
+            // Create article
+            $article = Article::create($request->all());
+
+            // Handle gallery images
+            if ($request->hasFile('gallery_images')) {
+                foreach ($request->file('gallery_images') as $galleryImage) {
+                    $filePath = CommonHelper::uploadFile($galleryImage, config('constants.upload_path.article.gallery_images'));
+
+                    Media::create([
+                        'article_id' => $article->id,
+                        'user_id'    => Auth::id(),
+                        'path'       => $image->getClientOriginalName(),
+                        'file_name'  => $filePath,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.articles.index') // fixed: was 'articless'
+                ->with('success', __("Article \"{$article->title}\" added successfully."));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            Log::error('Article creation failed: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', __("message.somethingwrong"))
+                ->withInput();
+        }
     }
 
     /**
@@ -36,7 +138,7 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
-        //
+        return view('admin.article.view', compact('article'));
     }
 
     /**
@@ -44,7 +146,10 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        //
+        $categories = Category::all();
+        $users = User::all();
+
+        return view('admin.article.add-edit', compact('article', 'categories', 'users'));
     }
 
     /**
@@ -52,7 +157,72 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            // Update featured image
+            if ($request->hasFile('image')) {
+                if (!empty($article->featured_image) && Storage::exists($article->featured_image)) {
+                    Storage::delete($article->featured_image);
+                }
+
+                $image = $request->file('image');
+                $filePath = CommonHelper::uploadFile($image, config('constants.upload_path.article.featured_image'));
+                $article->featured_image = $filePath;
+            }
+
+            // Update fields
+            $article->fill($request->except(['image', 'gallery_images', 'delete_gallery_images']));
+
+            // Checkbox handling
+            $article->is_featured = $request->has('is_featured');
+            $article->is_published = $request->has('is_published');
+            $article->is_carousel = $request->has('is_carousel');
+
+            $article->save();
+
+            // Delete gallery images
+            if ($request->filled('delete_gallery_images')) {
+                $mediaToDelete = Media::whereIn('id', $request->delete_gallery_images)->get();
+
+                foreach ($mediaToDelete as $media) {
+                    if (!empty($media->file_name) && Storage::exists($media->file_name)) {
+                        Storage::delete($media->file_name);
+                    }
+                }
+
+                Media::whereIn('id', $request->delete_gallery_images)->delete();
+            }
+
+            // Add new gallery images
+            if ($request->hasFile('gallery_images')) {
+                foreach ($request->file('gallery_images') as $galleryImage) {
+                    $filePath = CommonHelper::uploadFile($galleryImage, config('constants.upload_path.article.gallery_images'));
+
+                    Media::create([
+                        'article_id' => $article->id,
+                        'user_id'    => Auth::id(),
+                        'path'       => $galleryImage->getClientOriginalName(),
+                        'file_name'  => $filePath,
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('admin.articles.index')
+                ->with('success', __("Article \"{$article->title}\" updated successfully."));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Article update failed: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', __("message.somethingwrong"))
+                ->withInput();
+        }
     }
 
     /**
@@ -60,6 +230,43 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            // Delete featured image if exists
+            if (!empty($article->featured_image) && Storage::exists($article->featured_image)) {
+                Storage::delete($article->featured_image);
+            }
+
+            // Fetch related gallery images from Media table
+            $mediaFiles = Media::where(Media::ARTICLE_ID, $article->id)->get();
+
+            foreach ($mediaFiles as $media) {
+                if (!empty($media->path) && Storage::exists($media->path)) {
+                    Storage::delete($media->path);
+                }
+            }
+
+            // Delete media records
+            Media::where(Media::ARTICLE_ID, $article->id)->delete();
+
+            // Delete the article
+            $article->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->back()
+                ->with('success', __("Article \"{$article->title}\" deleted successfully."));
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Article deletion failed: ' . $e->getMessage());
+
+            return redirect()
+                ->back()
+                ->with('error', __("message.somethingwrong"))
+                ->withInput();
+        }
     }
 }
