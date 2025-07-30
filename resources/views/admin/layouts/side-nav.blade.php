@@ -54,6 +54,24 @@
                         <p>Categories</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.headlines.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tree"></i>
+                        <p>Headlines</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.advertisements.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tree"></i>
+                        <p>Advertisements</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.articles.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-tree"></i>
+                        <p>Articles</p>
+                    </a>
+                </li>
                 {{-- <li class="nav-item">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-edit"></i>

@@ -25,7 +25,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        dd('adsf');
         return redirect(route('admin.dashboard'));
     }
     public function dashboard()
@@ -33,17 +32,17 @@ class HomeController extends Controller
         return view('admin.dashboard');
     }
 
-    // public function fileServe($filePath, $disk=null)
-    // {
-    //     $disk = $disk ? $disk : config('constants.storage_disk');
-    //     if (Storage::disk($disk)->exists($filePath)) {
-    //           $content = Storage::disk($disk)->get($filePath);
-    //           $mime = Storage::mimeType($filePath);
-    //           $response = Response::make($content, 200);
-    //           $response->header("Content-Type", $mime);
+    public function fileServe($filePath, $disk=null)
+    {
+        $disk = $disk ? $disk : config('constants.storage_disk');
+        if (Storage::disk($disk)->exists($filePath)) {
+              $content = Storage::disk($disk)->get($filePath);
+              $mime = Storage::mimeType($filePath);
+              $response = Response::make($content, 200);
+              $response->header("Content-Type", $mime);
 
-    //           return $response;
-    //     }
-    //         return abort('403');
-    // }
+              return $response;
+        }
+            return abort('403');
+    }
 }

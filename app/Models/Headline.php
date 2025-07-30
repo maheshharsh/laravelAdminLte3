@@ -12,11 +12,27 @@ class Headline extends Model
 
     protected $table = 'headlines';
 
+        const ID       = 'id';
+        const TITLE       = 'title';
+        const CONTENT     = 'content';
+        const CATEGORY_ID = 'category_id';
+        const CREATED_AT = 'created_at';
+        const UPDATED_AT = 'updated_at';
+    
+    /*
+     * Constants for Categorys.
+     */
+    const BROWSE_HEADLINE = 'browse_headline';
+    const VIEW_HEADLINE = 'view_headline';
+    const CREATE_HEADLINE = 'create_headline';
+    const UPDATE_HEADLINE = 'update_headline';
+    const DELETE_HEADLINE = 'delete_headline';
+
     protected $fillable = [
-        'title',
-        'content',
-        'category_id',
-        'slug',
+        self::ID,
+        self::TITLE,
+        self::CONTENT,
+        self::CATEGORY_ID,
     ];
 
     protected $appends = ['category_name', 'time'];
@@ -59,35 +75,35 @@ class Headline extends Model
         return $this->belongsTo(Category::class);
     }
 
-    /**
-     * Boot the model to automatically generate a slug.
-     */
-    protected static function boot()
-    {
-        parent::boot();
+    // /**
+    //  * Boot the model to automatically generate a slug.
+    //  */
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($headline) {
-            if (empty($headline->slug)) {
-                $headline->slug = Str::slug($headline->title);
-                $originalSlug = $headline->slug;
-                $count = 1;
-                while (self::where('slug', $headline->slug)->exists()) {
-                    $headline->slug = $originalSlug . '-' . $count++;
-                }
-            }
-        });
+    //     static::creating(function ($headline) {
+    //         if (empty($headline->slug)) {
+    //             $headline->slug = Str::slug($headline->title);
+    //             $originalSlug = $headline->slug;
+    //             $count = 1;
+    //             while (self::where('slug', $headline->slug)->exists()) {
+    //                 $headline->slug = $originalSlug . '-' . $count++;
+    //             }
+    //         }
+    //     });
 
-        static::updating(function ($headline) {
-            if ($headline->isDirty('title') && empty($headline->slug)) {
-                $headline->slug = Str::slug($headline->title);
-                $originalSlug = $headline->slug;
-                $count = 1;
-                while (self::where('slug', $headline->slug)->where('id', '!=', $headline->id)->exists()) {
-                    $headline->slug = $originalSlug . '-' . $count++;
-                }
-            }
-        });
-    }
+    //     static::updating(function ($headline) {
+    //         if ($headline->isDirty('title') && empty($headline->slug)) {
+    //             $headline->slug = Str::slug($headline->title);
+    //             $originalSlug = $headline->slug;
+    //             $count = 1;
+    //             while (self::where('slug', $headline->slug)->where('id', '!=', $headline->id)->exists()) {
+    //                 $headline->slug = $originalSlug . '-' . $count++;
+    //             }
+    //         }
+    //     });
+    // }
 
     /**
      * Get the featured image URL with storage path.

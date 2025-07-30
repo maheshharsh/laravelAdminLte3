@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Gate;
 class CategoryController extends Controller
 {
     /**
- * Display a listing of the resource.
- *
- * @return \Illuminate\Http\Response
- */
-public function index(Request $request)
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
 {
         if (!Auth::check()) {
         return response()->json(['message' => 'Unauthorized'], 401);
