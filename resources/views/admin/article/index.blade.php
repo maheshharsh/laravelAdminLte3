@@ -5,9 +5,12 @@
 @section('contentheader_title', __('Articles'))
 
 @section('contentheader_btn')
-    <a href="{{ route('admin.articles.create') }}" class="btn btn-success btn-add-new">
-        <i class="fa fa-plus-circle"></i>&nbsp; <span>{{ __('Add New') }}</span>
-    </a>
+     @can('create_article')
+        <a href="{{ route('admin.articles.create') }}" class="btn btn-success btn-add-new">
+            <i class="fa fa-plus-circle"></i>&nbsp; <span>{{ __('Add New') }}</span>
+        </a>
+    @endcan 
+
 @endsection
 
 @section('content')

@@ -5,11 +5,11 @@
 @section('contentheader_title', __('User'))
 
 @section('contentheader_btn')
-{{-- @can('create_user') --}}
+@can('create_user')
 <a href="{{ route('admin.users.create') }}" class="btn btn-success btn-add-new">
     <i class="fa fa-plus-circle"></i>&nbsp; <span>{{ __('Add New') }}</span>
 </a>
-{{-- @endcan --}}
+@endcan
 @endsection
 
 @section('content')

@@ -5,11 +5,11 @@
 @section('contentheader_title', __('Categories'))
 
 @section('contentheader_btn')
-{{-- @can('create_permission') --}}
-<a href="{{ route('admin.categories.create') }}" class="btn btn-success btn-add-new">
-    <i class="fa fa-plus-circle"></i>&nbsp; <span> {{__('Add New')}} </span>
-</a>
-{{-- @endcan --}}
+    @can('create_category') 
+    <a href="{{ route('admin.categories.create') }}" class="btn btn-success btn-add-new">
+        <i class="fa fa-plus-circle"></i>&nbsp; <span> {{__('Add New')}} </span>
+    </a>
+    @endcan 
 @endsection
 
 @section('content')

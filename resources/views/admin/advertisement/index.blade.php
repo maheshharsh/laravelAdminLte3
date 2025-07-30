@@ -5,11 +5,11 @@
 @section('contentheader_title', __('Advertisement'))
 
 @section('contentheader_btn')
-    {{-- @can('create_permission') --}}
+     @can('create_permission')
     <a href="{{ route('admin.advertisements.create') }}" class="btn btn-success btn-add-new">
         <i class="fa fa-plus-circle"></i>&nbsp; <span>{{ __('Add New') }}</span>
     </a>
-    {{-- @endcan --}}
+     @endcan 
 @endsection
 
 @section('content')
