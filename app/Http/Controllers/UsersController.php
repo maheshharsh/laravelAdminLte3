@@ -13,17 +13,22 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Routing\Controller as BaseController;
 
-class UsersController extends Controller
+class UsersController extends BaseController
 {
     public function __construct()
     {
-        // $this->middleware(['permission:browse_user']);
-        // $this->middleware('permission:create_user', ['only' => ['create', 'store']]);
-        // $this->middleware('permission:update_user', ['only' => ['update', 'edit']]);
-        // $this->middleware('permission:delete_user', ['only' => ['destroy']]);
-        // $this->middleware('permission:view_user',   ['only' => ['show']]);
+        $this->middleware('auth');
+        
+        // Apply permissions to specific methods
+        $this->middleware('can:' . User::BROWSE_USER)->only(['index']);
+        $this->middleware('can:' . User::CREATE_USER)->only(['create', 'store']);
+        $this->middleware('can:' . User::VIEW_USER)->only(['show']);
+        $this->middleware('can:' . User::UPDATE_USER)->only(['edit', 'update']);
+        $this->middleware('can:' . User::DELETE_USER)->only(['destroy']);
     }
+
     /**
      * Display a listing of the resource.
      */

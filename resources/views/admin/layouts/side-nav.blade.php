@@ -30,119 +30,62 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
+                @can('browse_user')
                 <li class="nav-item">
                     <a href="{{ route('admin.users.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
                         <p>Users</p>
                     </a>
                 </li>
+                @endcan
+                @can('browse_permission')
                 <li class="nav-item">
                     <a href="{{ route('admin.permissions.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
                         <p>Permissions</p>
                     </a>
                 </li>
+                @endcan
+                @can('browse_role')
                 <li class="nav-item">
                     <a href="{{ route('admin.roles.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
                         <p>Roles</p>
                     </a>
                 </li>
+                @endcan
+                @can('browse_category')
                 <li class="nav-item">
                     <a href="{{ route('admin.categories.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
                         <p>Categories</p>
                     </a>
                 </li>
+                @endcan
+                @can('browse_headline')
                 <li class="nav-item">
                     <a href="{{ route('admin.headlines.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
                         <p>Headlines</p>
                     </a>
                 </li>
+                @endcan
+                @can('browse_advertisement')
                 <li class="nav-item">
                     <a href="{{ route('admin.advertisements.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
                         <p>Advertisements</p>
                     </a>
                 </li>
+                @endcan
+                @can('browse_article')
                 <li class="nav-item">
                     <a href="{{ route('admin.articles.index') }}" class="nav-link">
                         <i class="nav-icon fas fa-tree"></i>
                         <p>Articles</p>
                     </a>
                 </li>
-                {{-- <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-edit"></i>
-                        <p>
-                            Forms
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="pages/forms/general.html" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>General Elements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/forms/advanced.html" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Advanced Elements</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/forms/editors.html" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Editors</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/forms/validation.html" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Validation</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-table"></i>
-                        <p>
-                            Tables
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="pages/tables/simple.html" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Simple Tables</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/tables/data.html" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>DataTables</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="pages/tables/jsgrid.html" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>jsGrid</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li> --}}
-
-                {{-- <li class="nav-item">
-                    <a href="{{ route('admin.profile.edit') }}" class="nav-link">
-                        <i class="nav-icon fas fa-tree"></i>
-                        <p>Profile</p>
-                    </a>
-                </li> --}}
+                @endcan
                 <li class="nav-item">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Routing\Controller as BaseController;
 
-class HomeController extends Controller
+class HomeController extends BaseController
 {
     /**
      * Create a new controller instance.
@@ -15,7 +16,7 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->middleware('auth');
     }
 
     /**

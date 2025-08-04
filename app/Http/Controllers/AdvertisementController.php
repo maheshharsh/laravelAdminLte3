@@ -11,16 +11,24 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Http\JsonResponse;
 
-class AdvertisementController extends Controller
+class AdvertisementController extends BaseController
 {
+    /**
+     * Create a new controller instance.
+     */
     public function __construct()
     {
-        // $this->middleware(['permission:browse_user']);
-        // $this->middleware('permission:create_user', ['only' => ['create', 'store']]);
-        // $this->middleware('permission:update_user', ['only' => ['update', 'edit']]);
-        // $this->middleware('permission:delete_user', ['only' => ['destroy']]);
-        // $this->middleware('permission:view_user',   ['only' => ['show']]);
+        $this->middleware('auth');
+
+        // Apply permissions to specific methods
+        $this->middleware('can:' . Advertisement::BROWSE_ADVERTISEMENT)->only(['index']);
+        $this->middleware('can:' . Advertisement::CREATE_ADVERTISEMENT)->only(['create', 'store']);
+        $this->middleware('can:' . Advertisement::VIEW_ADVERTISEMENT)->only(['show']);
+        $this->middleware('can:' . Advertisement::UPDATE_ADVERTISEMENT)->only(['edit', 'update']);
+        $this->middleware('can:' . Advertisement::DELETE_ADVERTISEMENT)->only(['destroy']);
     }
 
     /**
@@ -29,11 +37,11 @@ class AdvertisementController extends Controller
     public function index(Request $request)
     {
         if (!Auth::check()) {
-        return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
         $selectCol = 'advertisements.' . Advertisement::ID . ',' . 'advertisements.' . Advertisement::TITLE;
         $advertisement = Advertisement::selectRaw($selectCol)->orderBy(Advertisement::ID);
-        
+
         $canView = Gate::allows(Advertisement::VIEW_ADVERTISEMENT);
         $canUpdate = Gate::allows(Advertisement::UPDATE_ADVERTISEMENT);
         $canDelete = Gate::allows(Advertisement::DELETE_ADVERTISEMENT);
@@ -51,15 +59,15 @@ class AdvertisementController extends Controller
                 // })
                 ->editColumn('action', function ($advertisement) use ($canView, $canUpdate, $canDelete) {
                     $action = '';
-                    // if ($canUpdate) {
+                    if ($canUpdate) {
                         $action .= '<a href="' . route('admin.advertisements.edit', $advertisement->id) . '"> <i class="fa fa-edit"></i> </a>';
-                    // }
-                    // if ($canView) {
+                    }
+                    if ($canView) {
                         $action .= '<a href="' . route('admin.advertisements.show', $advertisement->id) . '"> <i class="fa fa-eye"></i> </a>';
-                    // }
-                    // if ($canDelete) {
+                    }
+                    if ($canDelete) {
                         $action .= "<a href='#' class='delete' title='Delete' data-id='$advertisement->id'> <i class='fa fa-trash'></i> </a>";
-                    // }
+                    }
 
                     return $action;
                 })
@@ -90,25 +98,24 @@ class AdvertisementController extends Controller
                 $filePath = CommonHelper::uploadFile($image, config('constants.upload_path.adv_img'));
                 $request->merge(['adv_image' => $filePath]);
             }
-            
+
             // Create the adv
             $advertisement = Advertisement::create($request->all());
-                   
+
             return redirect()
                 ->route('admin.advertisements.index')
                 ->with('success', __("Advertisement \"{$advertisement->title}\" added successfully."));
-    
         } catch (\Exception $e) {
             // Optionally log the error
             Log::error('Advertisement creation failed: ' . $e->getMessage());
-    
+
             return redirect()
                 ->back()
                 ->with('error', __("message.somethingwrong"))
                 ->withInput();
         }
     }
-    
+
 
     /**
      * Display the specified resource.
@@ -135,7 +142,7 @@ class AdvertisementController extends Controller
         if ($request->file('image')) {
             $image = $request->file('image');
             $filePath = CommonHelper::uploadFile($image, config('constants.upload_path.adv_img'));
-            if ($advertisement->adv_image){
+            if ($advertisement->adv_image) {
                 Storage::delete($advertisement->adv_image);
             }
             $request->merge(['adv_image' => $filePath]);
@@ -158,7 +165,25 @@ class AdvertisementController extends Controller
             Storage::delete($advertisement->adv_image);
             return redirect()->back()->with('success', __("Advertisement \"$advertisement->name\" deleted successfully"));
         } else {
-            return redirect()->back()->with('error',__("message.somethingwrong"))->withInput();
+            return redirect()->back()->with('error', __("message.somethingwrong"))->withInput();
         }
+    }
+
+    public function indexData(): JsonResponse
+    {
+        $advertisements = Advertisement::whereNull('deleted_at')
+            ->select('id', 'title', 'adv_image')
+            ->get()
+            ->map(function ($ad) {
+                return [
+                    'id' => $ad->id,
+                    'title' => $ad->title,
+                    'adv_image' => $ad->adv_image ? asset('storage/' . $ad->adv_image) : null,
+                ];
+            });
+
+        return response()->json([
+            'data' => $advertisements,
+        ]);
     }
 }

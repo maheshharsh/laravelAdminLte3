@@ -10,9 +10,24 @@ use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Routing\Controller as BaseController;
+use Inertia\Inertia;
 
-class HeadlineController extends Controller
+class HeadlineController extends BaseController
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        
+        // Apply permissions to specific methods
+        $this->middleware('can:' . Headline::BROWSE_HEADLINE)->only(['index']);
+        $this->middleware('can:' . Headline::CREATE_HEADLINE)->only(['create', 'store']);
+        $this->middleware('can:' . Headline::VIEW_HEADLINE)->only(['show']);
+        $this->middleware('can:' . Headline::UPDATE_HEADLINE)->only(['edit', 'update']);
+        $this->middleware('can:' . Headline::DELETE_HEADLINE)->only(['destroy']);
+    }
+
+
     /**
      * Display a listing of the resource.
      */
@@ -49,15 +64,15 @@ class HeadlineController extends Controller
                 })
                 ->editColumn('action', function ($headline) use ($canView, $canUpdate, $canDelete) {
                     $action = '';
-                    // if ($canUpdate) {
+                    if ($canUpdate) {
                         $action .= '<a href="' . route('admin.headlines.edit', $headline->id) . '"> <i class="fa fa-edit"></i> </a>';
-                    // }
-                    // if ($canView) {
+                    }
+                    if ($canView) {
                         $action .= '<a href="' . route('admin.headlines.show', $headline->id) . '"> <i class="fa fa-eye"></i> </a>';
-                    // }
-                    // if ($canDelete) {
+                    }
+                    if ($canDelete) {
                         $action .= "<a href='#' class='delete' title='Delete' data-id='$headline->id'> <i class='fa fa-trash'></i> </a>";
-                    // }
+                    }
 
                     return $action;
                 })
@@ -154,5 +169,13 @@ class HeadlineController extends Controller
         } else {
             return redirect()->back()->withErrors(__('somethingwrong'))->withInput();
         }
+    }
+
+    public function showData(Request $request)
+    {    
+        $headline = Headline::findOrFail($request->id);
+        return Inertia::render('headlines/show', [
+            'headlines' => $headline,
+        ]);
     }
 }

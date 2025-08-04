@@ -76,13 +76,12 @@ class PermissionsDemoSeeder extends Seeder
         $updateUser = Permission::create(['name' => 'update_user']);
         $deleteUser = Permission::create(['name' => 'delete_user']);
 
-        // Category
-        $browseCategory = Permission::create(['name' => 'browse_category']);
-        $viewCategory = Permission::create(['name' => 'view_category']);
-        $createCategory = Permission::create(['name' => 'create_category']);
-        $updateCategory = Permission::create(['name' => 'update_category']);
-        $deleteCategory = Permission::create(['name' => 'delete_category']);
-
+        // commodities
+        $browseCommodities = Permission::create(['name' => 'browse_commodities']);
+        $viewCommodities = Permission::create(['name' => 'view_commodities']);
+        $createCommodities = Permission::create(['name' => 'create_commodities']);
+        $updateCommodities = Permission::create(['name' => 'update_commodities']);
+        $deleteCommodities = Permission::create(['name' => 'delete_commodities']);
 
         // create roles and assign existing permissions
         $roleSuperAdmin = Role::create(['guard_name'=>'web', 'name'=>'super-admin']);
