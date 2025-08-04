@@ -8,17 +8,30 @@ use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Http\JsonResponse;
 
-
-class CategoryController extends Controller
+class CategoryController extends BaseController
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+        
+        // Apply permissions to specific methods
+        $this->middleware('can:' . Category::BROWSE_CATEGORY)->only(['index']);
+        $this->middleware('can:' . Category::CREATE_CATEGORY)->only(['create', 'store']);
+        $this->middleware('can:' . Category::VIEW_CATEGORY)->only(['show']);
+        $this->middleware('can:' . Category::UPDATE_CATEGORY)->only(['edit', 'update']);
+        $this->middleware('can:' . Category::DELETE_CATEGORY)->only(['destroy']);
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-{
+    {
         if (!Auth::check()) {
         return response()->json(['message' => 'Unauthorized'], 401);
         }
@@ -42,15 +55,15 @@ class CategoryController extends Controller
                 })
                 ->editColumn('action', function ($permission) use ($canView, $canUpdate, $canDelete) {
                     $action = '';
-                    // if ($canUpdate) {
+                    if ($canUpdate) {
                         $action .= '<a href="' . route('admin.categories.edit', $permission->id) . '"> <i class="fa fa-edit"></i> </a>';
-                    // }
-                    // if ($canView) {
+                    }
+                    if ($canView) {
                         $action .= '<a href="' . route('admin.categories.show', $permission->id) . '"> <i class="fa fa-eye"></i> </a>';
-                    // }
-                    // if ($canDelete) {
+                    }
+                    if ($canDelete) {
                         $action .= "<a href='#' class='delete' title='Delete' data-id='$permission->id'> <i class='fa fa-trash'></i> </a>";
-                    // }
+                    }
 
                     return $action;
                 })
@@ -140,5 +153,14 @@ class CategoryController extends Controller
         } else {
             return redirect()->back()->withErrors(__('somethingwrong'))->withInput();
         }
+    }
+
+    public function indexData(): JsonResponse
+    {
+        $category = Category::get();
+
+        return response()->json([
+            'data' => $category
+        ]);
     }
 }

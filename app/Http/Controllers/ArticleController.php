@@ -6,6 +6,8 @@ use App\Helpers\CommonHelper;
 use App\Http\Requests\ArticleRequest;
 use App\Models\Article;
 use App\Models\Category;
+use App\Models\Commodities;
+use App\Models\Headline;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
@@ -15,16 +17,21 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\Media;
+use Illuminate\Routing\Controller as BaseController;
+use Inertia\Inertia;
 
-class ArticleController extends Controller
+class ArticleController extends BaseController
 {
     public function __construct()
     {
-        // $this->middleware(['permission:browse_user']);
-        // $this->middleware('permission:create_user', ['only' => ['create', 'store']]);
-        // $this->middleware('permission:update_user', ['only' => ['update', 'edit']]);
-        // $this->middleware('permission:delete_user', ['only' => ['destroy']]);
-        // $this->middleware('permission:view_user',   ['only' => ['show']]);
+        $this->middleware('auth');
+
+        // Apply permissions to specific methods
+        $this->middleware('can:' . Article::BROWSE_ARTICLE)->only(['index']);
+        $this->middleware('can:' . Article::CREATE_ARTICLE)->only(['create', 'store']);
+        $this->middleware('can:' . Article::VIEW_ARTICLE)->only(['show']);
+        $this->middleware('can:' . Article::UPDATE_ARTICLE)->only(['edit', 'update']);
+        $this->middleware('can:' . Article::DELETE_ARTICLE)->only(['destroy']);
     }
 
     /**
@@ -33,11 +40,11 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         if (!Auth::check()) {
-        return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
-        $selectCol = 'articles.' . Article::ID . ',' . 'articles.' . Article::TITLE. ',' . 'articles.' . Article::PUBLISHEDAT. ',' . 'articles.' . Article::ISFEATURED. ',' . 'articles.' . Article::ISPUBLISHED. ',' . 'articles.' . Article::ISCAROUSEL. ',' . 'articles.' . Article::SLUG. ',' . 'articles.' . Article::SUBCONTENT;
+        $selectCol = 'articles.' . Article::ID . ',' . 'articles.' . Article::TITLE . ',' . 'articles.' . Article::PUBLISHEDAT . ',' . 'articles.' . Article::ISFEATURED . ',' . 'articles.' . Article::ISPUBLISHED . ',' . 'articles.' . Article::ISCAROUSEL . ',' . 'articles.' . Article::SLUG . ',' . 'articles.' . Article::SUBCONTENT;
         $article = Article::selectRaw($selectCol)->orderBy(Article::ID);
-        
+
         $canView = Gate::allows(Article::VIEW_ARTICLE);
         $canUpdate = Gate::allows(Article::UPDATE_ARTICLE);
         $canDelete = Gate::allows(Article::DELETE_ARTICLE);
@@ -56,13 +63,13 @@ class ArticleController extends Controller
                 ->editColumn('action', function ($article) use ($canView, $canUpdate, $canDelete) {
                     $action = '';
                     // if ($canUpdate) {
-                        $action .= '<a href="' . route('admin.articles.edit', $article->id) . '"> <i class="fa fa-edit"></i> </a>';
+                    $action .= '<a href="' . route('admin.articles.edit', $article->id) . '"> <i class="fa fa-edit"></i> </a>';
                     // }
                     // if ($canView) {
-                        $action .= '<a href="' . route('admin.articles.show', $article->id) . '"> <i class="fa fa-eye"></i> </a>';
+                    $action .= '<a href="' . route('admin.articles.show', $article->id) . '"> <i class="fa fa-eye"></i> </a>';
                     // }
                     // if ($canDelete) {
-                        $action .= "<a href='#' class='delete' title='Delete' data-id='$article->id'> <i class='fa fa-trash'></i> </a>";
+                    $action .= "<a href='#' class='delete' title='Delete' data-id='$article->id'> <i class='fa fa-trash'></i> </a>";
                     // }
 
                     return $action;
@@ -121,7 +128,6 @@ class ArticleController extends Controller
             return redirect()
                 ->route('admin.articles.index') // fixed: was 'articless'
                 ->with('success', __("Article \"{$article->title}\" added successfully."));
-
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -214,7 +220,6 @@ class ArticleController extends Controller
             return redirect()
                 ->route('admin.articles.index')
                 ->with('success', __("Article \"{$article->title}\" updated successfully."));
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Article update failed: ' . $e->getMessage());
@@ -259,7 +264,6 @@ class ArticleController extends Controller
             return redirect()
                 ->back()
                 ->with('success', __("Article \"{$article->title}\" deleted successfully."));
-
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Article deletion failed: ' . $e->getMessage());
@@ -269,5 +273,104 @@ class ArticleController extends Controller
                 ->with('error', __("message.somethingwrong"))
                 ->withInput();
         }
+    }
+
+
+    /**
+     * Display the home page with articles, headlines, and commodities.
+     */
+    public function home()
+    {
+        // dd('asdf');
+        $articles = Article::with('category')
+            ->where('is_published', true)
+            ->latest()
+            ->get();
+
+        $headlines = Headline::with('category')
+            ->latest()
+            ->get();
+
+        $commodities = Commodities::latest()
+            ->get();
+
+        return Inertia::render('Home', [
+            'articles' => $articles,
+            'headlines' => $headlines,
+            'commodities' => $commodities,
+        ]);
+    }
+
+    // public function politicsIndex()
+    // {
+    //     $politics = Article::with('category')
+    //         ->where('is_published', true)
+    //         ->latest()
+    //         ->get();
+
+    //     $headlines = Headline::with('category')
+    //         ->whereHas('category', function ($query) {
+    //             $query->where('slug', 'Politics'); 
+    //         })
+    //         ->latest()
+    //         ->get();
+
+    //     return Inertia::render('politics/Index', [
+    //         'articles' => $politics,
+    //         'headlines' => $headlines,
+    //     ]);
+    // }
+
+    // public function sportsIndex()
+    // {
+    //     $politics = Article::with('category')
+    //         ->where('is_published', true)
+    //         ->latest()
+    //         ->get();
+
+    //     $headlines = Headline::with('category')
+    //         ->whereHas('category', function ($query) {
+    //             $query->where('slug', 'Sports'); 
+    //         })
+    //         ->latest()
+    //         ->get();
+
+    //     return Inertia::render('sports/Index', [
+    //         'articles' => $politics,
+    //         'headlines' => $headlines,
+    //     ]);
+    // }
+
+    public function showData(Request $request)
+    {
+        $article = Article::with('media')->findorFail($request->id);
+        return Inertia::render('article/show', [
+            'article' => $article,
+        ]);
+    }
+
+    public function category(Request $request)
+    {
+        // Fetch articles filtered by category slug and is_published
+        $articles = Article::with('category')
+            ->where('is_published', true)
+            ->whereHas('category', function ($query) use ($request) {
+                $query->where('slug', $request->slug);
+            })
+            ->latest()
+            ->get();
+
+        // Fetch headlines filtered by category slug
+        $headlines = Headline::with('category')
+            ->whereHas('category', function ($query) use ($request) {
+                $query->where('slug', $request->slug);
+            })
+            ->latest()
+            ->get();
+
+        return Inertia::render('category/Index', [
+            'articles' => $articles,
+            'headlines' => $headlines,
+        ]);
     }
 }

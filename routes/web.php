@@ -12,12 +12,25 @@ use App\Http\Controllers\PermissionController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 
+// =========================
+// FRONTEND ROUTES
+// =========================
+
+// home page
+Route::get('/', [ArticleController::class, 'home'])->name('articles.index');
+Route::get('/articles/{id}', [ArticleController::class, 'showData'])->name('articles.show');
+
+Route::get('/headline/{id}', [HeadlineController::class, 'showData'])->name('headline.show');
+
+// api
+Route::get('/advertisements', [AdvertisementController::class, 'indexData']);
+Route::get('/categories', [CategoryController::class, 'index']);
+
+// slug redirect
+// Route::get('/{slug}', [ArticleController::class, 'category'])->name('articles.slug');
+
+
 $UrlPrefix = 'admin';
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
 
 Route::get('admin/dashboard', function () {
     return view('admin.dashboard');
@@ -44,3 +57,8 @@ Route::middleware('auth')->prefix($UrlPrefix)->as('admin.')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// ✅ Catch-all slug route should always be LAST
+Route::get('/{slug}', [ArticleController::class, 'category'])
+    ->where('slug', '^(?!admin|api).*$')
+    ->name('articles.slug');
