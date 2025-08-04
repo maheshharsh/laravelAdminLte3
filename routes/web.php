@@ -40,7 +40,7 @@ Route::middleware('auth')->prefix($UrlPrefix)->as('admin.')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     Route::get('file/serve/{file_path}', [HomeController::class, 'fileServe'])->where('file_path', '(.*)')->name('file.serve');
     Route::post('/get-additional-permission', [PermissionController::class, 'getRolePermission'])->name('getRolePermission');
 

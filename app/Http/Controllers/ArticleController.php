@@ -24,14 +24,14 @@ class ArticleController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
 
-        // Apply permissions to specific methods
-        $this->middleware('can:' . Article::BROWSE_ARTICLE)->only(['index']);
-        $this->middleware('can:' . Article::CREATE_ARTICLE)->only(['create', 'store']);
-        $this->middleware('can:' . Article::VIEW_ARTICLE)->only(['show']);
-        $this->middleware('can:' . Article::UPDATE_ARTICLE)->only(['edit', 'update']);
-        $this->middleware('can:' . Article::DELETE_ARTICLE)->only(['destroy']);
+        // // Apply permissions to specific methods
+        // $this->middleware('can:' . Article::BROWSE_ARTICLE)->only(['index']);
+        // $this->middleware('can:' . Article::CREATE_ARTICLE)->only(['create', 'store']);
+        // $this->middleware('can:' . Article::VIEW_ARTICLE)->only(['show']);
+        // $this->middleware('can:' . Article::UPDATE_ARTICLE)->only(['edit', 'update']);
+        // $this->middleware('can:' . Article::DELETE_ARTICLE)->only(['destroy']);
     }
 
     /**
@@ -310,7 +310,7 @@ class ArticleController extends BaseController
 
     //     $headlines = Headline::with('category')
     //         ->whereHas('category', function ($query) {
-    //             $query->where('slug', 'Politics'); 
+    //             $query->where('slug', 'Politics');
     //         })
     //         ->latest()
     //         ->get();
@@ -330,7 +330,7 @@ class ArticleController extends BaseController
 
     //     $headlines = Headline::with('category')
     //         ->whereHas('category', function ($query) {
-    //             $query->where('slug', 'Sports'); 
+    //             $query->where('slug', 'Sports');
     //         })
     //         ->latest()
     //         ->get();
