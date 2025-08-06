@@ -15,8 +15,8 @@ class CommoditiesController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        
+        // $this->middleware('auth');
+
         // Apply permissions to specific methods
         $this->middleware('can:' . Commodities::BROWSE_COMMODITIES)->only(['index']);
         $this->middleware('can:' . Commodities::CREATE_COMMODITIES)->only(['create', 'store']);
@@ -37,7 +37,7 @@ class CommoditiesController extends BaseController
         }
         $selectCol = 'categories.' . Commodities::ID . ',' . 'categories.' . Commodities::TITLE. ',' . 'categories.' . Commodities::PRICE;
         $category = Commodities::selectRaw($selectCol)->orderBy(Commodities::ID);
-        
+
         $canView = Gate::allows(Commodities::VIEW_COMMODITIES);
         $canUpdate = Gate::allows(Commodities::UPDATE_COMMODITIES);
         $canDelete = Gate::allows(Commodities::DELETE_COMMODITIES);
@@ -106,7 +106,7 @@ class CommoditiesController extends BaseController
     {
         return view('admin.commodities.view', compact('commodities'));
     }
-    
+
     /**
      * Show the form for editing the specified resource.
     */

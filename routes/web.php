@@ -24,7 +24,7 @@ Route::get('/headline/{id}', [HeadlineController::class, 'showData'])->name('hea
 
 // api
 Route::get('/advertisements', [AdvertisementController::class, 'indexData']);
-Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories', [CategoryController::class, 'indexData']);
 
 // slug redirect
 // Route::get('/{slug}', [ArticleController::class, 'category'])->name('articles.slug');

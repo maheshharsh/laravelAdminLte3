@@ -22,7 +22,7 @@ class RoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|max:40|unique:roles,name,'.isset($this->role->id),
+            // 'name' => 'required|max:40|unique:roles,name,'.isset($this->role->id),
         ];
     }
     public function messages(): array

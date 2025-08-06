@@ -15,8 +15,8 @@ class CategoryController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        
+        // $this->middleware('auth');
+
         // Apply permissions to specific methods
         $this->middleware('can:' . Category::BROWSE_CATEGORY)->only(['index']);
         $this->middleware('can:' . Category::CREATE_CATEGORY)->only(['create', 'store']);
@@ -37,7 +37,7 @@ class CategoryController extends BaseController
         }
         $selectCol = 'categories.' . Category::ID . ',' . 'categories.' . Category::NAME. ',' . 'categories.' . Category::SLUG;
         $category = Category::selectRaw($selectCol)->orderBy(Category::ID);
-        
+
         $canView = Gate::allows(Category::VIEW_CATEGORY);
         $canUpdate = Gate::allows(Category::UPDATE_CATEGORY);
         $canDelete = Gate::allows(Category::DELETE_CATEGORY);
@@ -106,7 +106,7 @@ class CategoryController extends BaseController
     {
         return view('admin.category.view', compact('category'));
     }
-    
+
     /**
      * Show the form for editing the specified resource.
     */

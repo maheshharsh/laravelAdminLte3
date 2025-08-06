@@ -20,7 +20,7 @@ class UsersController extends BaseController
     public function __construct()
     {
         $this->middleware('auth');
-        
+
         // Apply permissions to specific methods
         $this->middleware('can:' . User::BROWSE_USER)->only(['index']);
         $this->middleware('can:' . User::CREATE_USER)->only(['create', 'store']);
@@ -60,18 +60,18 @@ class UsersController extends BaseController
                 $filePath = CommonHelper::uploadFile($image, config('constants.upload_path.users_img'));
                 $request->merge(['profile_image' => $filePath]);
             }
-            
+
             // Hash the password before saving
             $request->merge(['password' => Hash::make($request->password)]);
-            
+
             // Create the user
             $user = User::create($request->all());
-            
-            // Assign role   
+
+            // Assign role
             if ($request->filled('role')) {
                 $user->assignRole($request->role);
             }
-            
+
             // Assign permissions if any
             if ($request->filled('permission')) {
                 $user->givePermissionTo($request->permission);
@@ -79,18 +79,18 @@ class UsersController extends BaseController
             return redirect()
                 ->route('admin.users.index')
                 ->with('success', __("User \"{$user->name}\" added successfully."));
-    
+
         } catch (\Exception $e) {
             // Optionally log the error
             Log::error('User creation failed: ' . $e->getMessage());
-    
+
             return redirect()
                 ->back()
                 ->with('error', __("message.somethingwrong"))
                 ->withInput();
         }
     }
-    
+
 
     /**
      * Display the specified resource.
@@ -105,17 +105,15 @@ class UsersController extends BaseController
      */
     public function edit(User $user)
     {
-        $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->get();
-
-        $loggedin_user_role = Auth::User()->roles->first()->id ;
-        $user_edit = Role::where(Role::NAME, $user->role)->first()->id ;
-
-        if($loggedin_user_role == Role::ADMIN){
-            $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->whereNot(Role::ID,Role::SUPER_ADMIN)->get();
-        };
-        if($loggedin_user_role == Role::ADMIN && $user_edit == Role::SUPER_ADMIN){
-            $roles = Role::select(Role::ID, Role::NAME)->orderBy(Role::ID)->where(Role::ID,Role::SUPER_ADMIN)->get();
+        $roles = Role::select(Role::ID, Role::NAME);
+        if (auth()->user()->hasRole(Role::SUPER_ADMIN) && (isset($user->roles[0]->name) && $user->roles[0]->name != Role::USER)) {
+            $roles = $roles->whereNotIn(Role::NAME, [Role::USER])->orderBy(Role::NAME, 'ASC');
+        } elseif (auth()->user()->hasRole(Role::SUPER_ADMIN) && ! isset($user->roles[0]->name)) {
+            $roles = $roles->orderBy(Role::NAME, 'ASC');
+        } else {
+            $roles = $roles->whereIn(Role::NAME, [Role::USER]);
         }
+        $roles = $roles->get();
 
         return view('admin.users.add-edit', compact('user','roles'));
     }

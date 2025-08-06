@@ -26,12 +26,12 @@ class ArticleController extends BaseController
     {
         // $this->middleware('auth');
 
-        // // Apply permissions to specific methods
-        // $this->middleware('can:' . Article::BROWSE_ARTICLE)->only(['index']);
-        // $this->middleware('can:' . Article::CREATE_ARTICLE)->only(['create', 'store']);
-        // $this->middleware('can:' . Article::VIEW_ARTICLE)->only(['show']);
-        // $this->middleware('can:' . Article::UPDATE_ARTICLE)->only(['edit', 'update']);
-        // $this->middleware('can:' . Article::DELETE_ARTICLE)->only(['destroy']);
+        // Apply permissions to specific methods
+        $this->middleware('can:' . Article::BROWSE_ARTICLE)->only(['index']);
+        $this->middleware('can:' . Article::CREATE_ARTICLE)->only(['create', 'store']);
+        $this->middleware('can:' . Article::VIEW_ARTICLE)->only(['show']);
+        $this->middleware('can:' . Article::UPDATE_ARTICLE)->only(['edit', 'update']);
+        $this->middleware('can:' . Article::DELETE_ARTICLE)->only(['destroy']);
     }
 
     /**

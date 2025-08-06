@@ -17,8 +17,8 @@ class HeadlineController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware('auth');
-        
+        // $this->middleware('auth');
+
         // Apply permissions to specific methods
         $this->middleware('can:' . Headline::BROWSE_HEADLINE)->only(['index']);
         $this->middleware('can:' . Headline::CREATE_HEADLINE)->only(['create', 'store']);
@@ -38,7 +38,7 @@ class HeadlineController extends BaseController
         }
         $selectCol = 'headlines.' . Headline::ID . ',' . 'headlines.' . Headline::TITLE. ',' . 'headlines.' . Headline::CONTENT . ',' . 'headlines.' . Headline::CATEGORY_ID;
         $headline = Headline::selectRaw($selectCol)->orderBy(Headline::ID);
-        
+
         $canView = Gate::allows(Headline::VIEW_HEADLINE);
         $canUpdate = Gate::allows(Headline::UPDATE_HEADLINE);
         $canDelete = Gate::allows(Headline::DELETE_HEADLINE);
@@ -99,12 +99,12 @@ class HeadlineController extends BaseController
     {
         try {
             $headline = Headline::create($request->validated());
-            
+
             if ($headline) {
                 return redirect()->route('admin.headlines.index')
                 ->with('success', "Headline \"$headline->title\" added successfully");
             }
-            
+
         } catch (\Exception $ex) {
             Log::error($ex);
             return redirect()->back()
@@ -172,7 +172,7 @@ class HeadlineController extends BaseController
     }
 
     public function showData(Request $request)
-    {    
+    {
         $headline = Headline::findOrFail($request->id);
         return Inertia::render('headlines/show', [
             'headlines' => $headline,

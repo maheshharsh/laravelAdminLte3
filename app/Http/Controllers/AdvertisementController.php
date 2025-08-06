@@ -21,7 +21,7 @@ class AdvertisementController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        // $this->middleware('auth');
 
         // Apply permissions to specific methods
         $this->middleware('can:' . Advertisement::BROWSE_ADVERTISEMENT)->only(['index']);
