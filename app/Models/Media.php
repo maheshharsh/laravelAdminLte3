@@ -11,7 +11,7 @@ class Media extends Model
      *
      * @var string
      */
-    protected $table = 'Media';
+    protected $table = 'media';
 
     const ID            = 'id';
     const FILE_NAME     = 'file_name';
