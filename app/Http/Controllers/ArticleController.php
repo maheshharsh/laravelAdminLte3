@@ -344,6 +344,10 @@ class ArticleController extends BaseController
     public function showData(Request $request)
     {
         $article = Article::with('media')->findorFail($request->id);
+
+        // Add `url` attribute for each media in JSON
+        $article->media->each->append('url');
+
         return Inertia::render('article/show', [
             'article' => $article,
         ]);

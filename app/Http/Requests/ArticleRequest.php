@@ -26,7 +26,7 @@ class ArticleRequest extends FormRequest
             'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,webp,gif', 'max:2048'],
             'category_id'      => ['required', 'integer', 'exists:categories,id'],
             'user_id'          => ['nullable', 'integer', 'exists:users,id'],
-            'published_at'     => ['nullable', 'date', 'before_or_equal:now'],
+            'published_at'     => ['nullable', 'date'],
             'is_featured'      => ['nullable', 'boolean'],
             'is_published'     => ['nullable', 'boolean'],
             'is_carousel'      => ['nullable', 'boolean'],

@@ -42,5 +42,24 @@ class Media extends Model
         self::USER_ID,
         self::ARTICLE_ID,
     ];
+
+    protected $appends = ['url'];
+
+    /**
+     * Get the featured image URL with storage path.
+     *
+     * @param  string|null  $value
+     * @return string|null
+     */
+    public function getUrlAttribute(): ?string
+    {
+        if ($this->path && $this->file_name) {
+            // file_path = "path/filename.ext"
+            return route('admin.file.serve', [
+                'file_path' => ltrim($this->file_name)
+            ]);
+        }
+        return null;
+    }
 }
 

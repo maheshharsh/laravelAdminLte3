@@ -70,6 +70,10 @@ export default function Show({ article }: ShowProps) {
         <meta property="og:type" content="article" />
         <meta property="og:url" content={shareUrl} />
         <meta property="og:image" content={article.image} />
+
+        <meta name="title" content={article.title} />
+        <link rel="image_src" href={article.image} />
+
       </Head>
 
       <div className="mx-auto my-8 px-4 sm:px-6 lg:px-8">
