@@ -29,7 +29,7 @@ const defaultImage = "/images/default_image.jpg";
 
 export default function Show({ article }: ShowProps) {
 
-  const shareUrl = `${window.location.origin}/article/${article.id}`;
+  const shareUrl = `${window.location.origin}/articles/${article.id}`;
 
   // Sanitize HTML content to prevent XSS
   const sanitizedContent = sanitizeHtml(article.content, {
