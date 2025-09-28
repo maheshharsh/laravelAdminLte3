@@ -350,7 +350,9 @@ class ArticleController extends BaseController
 
         return Inertia::render('article/show', [
             'article' => $article,
-        ]);
+        ])->withViewData([
+            'article' => $article, // for Blade
+        ]);;
     }
 
     public function category(Request $request)

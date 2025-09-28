@@ -27,8 +27,7 @@ interface ShowProps {
 
 const defaultImage = "/images/default_image.jpg";
 
-const shareUrl: string = window.location.href;
-
+const shareUrl = window.location.origin + window.location.pathname;
 export default function Show({ article }: ShowProps) {
   // Sanitize HTML content to prevent XSS
   const sanitizedContent = sanitizeHtml(article.content, {
@@ -64,17 +63,7 @@ export default function Show({ article }: ShowProps) {
 
   return (
     <AppLayout currentRoute="article.show">
-      <Head title={article.title} >
-        <meta property="og:title" content={article.title} />
-        <meta property="og:description" content="" />
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={shareUrl} />
-        <meta property="og:image" content={article.image} />
-
-        <meta name="title" content={article.title} />
-        <link rel="image_src" href={article.image} />
-
-      </Head>
+      <Head title={article.title} />
 
       <div className="mx-auto my-8 px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
