@@ -27,8 +27,10 @@ interface ShowProps {
 
 const defaultImage = "/images/default_image.jpg";
 
-const shareUrl = window.location.href;
 export default function Show({ article }: ShowProps) {
+
+  const shareUrl = `${window.location.origin}/article/${article.id}`;
+
   // Sanitize HTML content to prevent XSS
   const sanitizedContent = sanitizeHtml(article.content, {
     allowedTags: sanitizeHtml.defaults.allowedTags.concat([
