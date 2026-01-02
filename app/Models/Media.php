@@ -61,5 +61,10 @@ class Media extends Model
         }
         return null;
     }
+
+    public function getFileNameAttribute($value): ?string
+    {
+        return $value ? asset('/storage/' . $value) : null;
+    }
 }
 

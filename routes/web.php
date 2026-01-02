@@ -4,6 +4,7 @@ use App\Http\Controllers\AdvertisementController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HeadlineController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RoleController;
@@ -18,8 +19,11 @@ use App\Http\Controllers\ProfileController;
 
 // home page
 Route::get('/', [ArticleController::class, 'home'])->name('articles.index');
-Route::get('/articles/{id}', [ArticleController::class, 'showData'])->name('articles.show');
 
+// Contact page route - must be before slug route
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+
+Route::get('/articles/{id}', [ArticleController::class, 'showData'])->name('articles.show');
 Route::get('/headline/{id}', [HeadlineController::class, 'showData'])->name('headline.show');
 
 // api
@@ -60,5 +64,5 @@ require __DIR__.'/auth.php';
 
 // ✅ Catch-all slug route should always be LAST
 Route::get('/{slug}', [ArticleController::class, 'category'])
-    ->where('slug', '^(?!admin|api).*$')
+    ->where('slug', '^(?!admin|api|contact).*$')
     ->name('articles.slug');

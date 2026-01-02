@@ -1,3 +1,6 @@
+@import './advertisements.css';
+@import './news-portal.css';
+@import './editorial-design.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

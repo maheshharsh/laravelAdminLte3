@@ -18,6 +18,9 @@ class Article extends Model
       const  SUBCONTENT         =         'sub_content';
       const  CONTENT            =         'content';
       const  FEATUREDIMAGE      =         'featured_image';
+      const  VIDEOFILE          =         'video_file';
+      const  VIDEOTHUMBNAIL     =         'video_thumbnail';
+      const  VIDEODESCRIPTION   =         'video_description';
       const  CATEGORYID         =         'category_id';
       const  USERID             =         'user_id';
       const  PUBLISHEDAT        =         'published_at';
@@ -32,6 +35,9 @@ class Article extends Model
        self::SUBCONTENT,
        self::CONTENT,
        self::FEATUREDIMAGE,
+       self::VIDEOFILE,
+       self::VIDEOTHUMBNAIL,
+       self::VIDEODESCRIPTION,
        self::CATEGORYID,
        self::USERID,
        self::PUBLISHEDAT,
@@ -99,6 +105,8 @@ class Article extends Model
     {
         return $this->featured_image ? asset('/storage/' . $this->featured_image) : null;
     }
+
+    
 
     // public function getPublishedAtAttribute($value): ?string
     // {

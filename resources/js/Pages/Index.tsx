@@ -2,15 +2,14 @@
 
 import React, { ReactNode, useEffect, useState } from "react";
 import { Link, Head } from "@inertiajs/react";
-import Carousel from "../components/Carousel";
+import AppLayout from "../layouts/AppLayout";
+import ImageCarousel from "../components/ImageCarousel";
 import CommodityCard from "../components/CommodityCard";
-import Advertisement from "../components/Advertisment";
 import NewsHeadlines from "../components/NewsHeadlines";
 import NewsBlock from "../components/NewsBlock";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Clock } from "lucide-react";
-import Navbar from "../components/Navbar";
 
 interface Article {
     created_at: ReactNode;
@@ -75,94 +74,60 @@ const Index: React.FC<Props> = ({ articles }) => {
         return () => clearInterval(interval);
     }, []);
 
-    const carouselItems = [
+    const carouselImages = [
         {
-            image: "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3",
-            category: "BREAKING",
+            src: "https://images.unsplash.com/photo-1586339949916-3e9457bef6d3?auto=format&fit=crop&w=1200&q=80",
+            alt: "Global Summit Addresses Climate Change",
             title: "Global Summit Addresses Climate Change",
-            content: "World leaders gather to discuss urgent climate action plans...",
+            description: "World leaders gather to discuss urgent climate action plans..."
         },
         {
-            image: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-            category: "TECHNOLOGY",
+            src: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+            alt: "New AI Breakthrough Revolutionizes Healthcare",
             title: "New AI Breakthrough Revolutionizes Healthcare",
-            content: "Researchers develop AI that can predict diseases with 95% accuracy...",
+            description: "Researchers develop AI that can predict diseases with 95% accuracy..."
         },
         {
-            image: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e",
-            category: "SPORTS",
+            src: "https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1200&q=80",
+            alt: "National Team Wins Championship After Decade",
             title: "National Team Wins Championship After Decade",
-            content: "Historic victory celebrated nationwide as underdogs take the title...",
-        },
-    ].map((item, index) => (
-        <div key={index} className="h-96 relative overflow-hidden rounded-lg">
-            <img
-                src={`${item.image}?auto=format&fit=crop&w=800&h=400&q=80`}
-                alt={item.category}
-                className="w-full h-full object-cover absolute inset-0"
-                onError={(e) => {
-                    e.currentTarget.src = `https://via.placeholder.com/800x400?text=${item.category}+Image`;
-                }}
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-end p-6">
-                <div className="text-white">
-                    <span
-                        className={`${
-                            item.category === "BREAKING"
-                                ? "bg-red-600"
-                                : item.category === "TECHNOLOGY"
-                                ? "bg-blue-600"
-                                : "bg-green-600"
-                        } text-xs font-semibold px-2 py-1 rounded`}
-                    >
-                        {item.category}
-                    </span>
-                    <h2 className="text-3xl font-bold mt-2">{item.title}</h2>
-                    <p className="mt-2">{item.content}</p>
-                </div>
-            </div>
-        </div>
-    ));
+            description: "Historic victory celebrated nationwide as underdogs take the title..."
+        }
+    ];
 
     return (
-        <>
+        <AppLayout currentRoute="">
             <Head title="News Portal" />
-            <Navbar currentRoute={""} />
-            {/* Page layout */}
-            <div className="flex pt-16 h-screen overflow-hidden">
+            {/* Commodity Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-5">
+                <CommodityCard title="Gold (24K)" price={prices.gold} unit="/g" lastUpdated={prices.lastUpdated} />
+                <CommodityCard title="Silver" price={prices.silver} unit="/g" lastUpdated={prices.lastUpdated} />
+                <CommodityCard title="Crude Oil" price={prices.crudeOil} unit="/barrel" lastUpdated={prices.lastUpdated} />
+            </div>
 
-                {/* Left Advertisement - Fixed */}
-                <div className="w-1/6 fixed left-0 top-2 bottom-0 bg-white overflow-hidden z-40">
-                    <Advertisement
-                        firstImage="https://images.unsplash.com/photo-1586339949916-3e9457bef6d3"
-                        secondImage="https://images.unsplash.com/photo-1586339949916-3e9457bef6d3"
-                        thirdImage="https://images.unsplash.com/photo-1586339949916-3e9457bef6d3"
-                        forthImage="https://images.unsplash.com/photo-1586339949916-3e9457bef6d3"
-                    />
-                </div>
+            {/* Carousel */}
+            <section>
+                <h1 className="text-3xl font-bold my-2">Latest News</h1>
+                <ImageCarousel 
+                    images={carouselImages} 
+                    autoPlay={true} 
+                    interval={5000} 
+                    showControls={true} 
+                    showIndicators={true}
+                    adaptiveHeight={true}
+                    maxHeight={500}
+                    minHeight={300}
+                    objectFit="cover"
+                />
+            </section>
 
-                {/* Main Content - Scrollable */}
-                <main className="w-4/6 mx-[16.67%] overflow-y-auto h-full px-4 pb-16">
-                    {/* Commodity Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-5">
-                        <CommodityCard icon={<span>💰</span>} name="Gold (24K)" value={prices.gold} unit="/g" color="yellow" />
-                        <CommodityCard icon={<span>🥈</span>} name="Silver" value={prices.silver} unit="/g" color="gray" />
-                        <CommodityCard icon={<span>🛢️</span>} name="Crude Oil" value={prices.crudeOil} unit="/barrel" color="blue" />
-                    </div>
+            {/* News */}
+            <NewsHeadlines headlines={[]} />
 
-                    {/* Carousel */}
-                    <section>
-                        <h1 className="text-3xl font-bold my-2">Latest News</h1>
-                        <Carousel items={carouselItems} autoPlay={true} interval={5000} showControls={true} showIndicators={true} />
-                    </section>
-
-                    {/* News */}
-                    <NewsHeadlines />
-
-                    <div className="flex gap-2 mt-4">
-                        <NewsBlock />
-                        <NewsBlock />
-                    </div>
+            <div className="flex gap-2 mt-4">
+                <NewsBlock title="Breaking News" category="news" articles={[]} />
+                <NewsBlock title="Sports" category="sports" articles={[]} />
+            </div>
 
                     {/* Featured News */}
                     <section className="my-8 rounded shadow-md p-5">
@@ -200,17 +165,7 @@ const Index: React.FC<Props> = ({ articles }) => {
                             ))}
                         </div>
                     </section>
-                </main>
-
-                {/* Right Advertisement - Fixed */}
-                <div className="w-1/6 fixed right-0 top-2 bottom-0 bg-white overflow-hidden z-40">
-                    <Advertisement
-                        firstImage="https://images.unsplash.com/photo-1586339949916-3e9457bef6d3"
-                        secondImage="https://images.unsplash.com/photo-1586339949916-3e9457bef6d3"
-                    />
-                </div>
-            </div>
-        </>
+        </AppLayout>
     );
 };
 

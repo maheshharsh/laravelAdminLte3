@@ -6,13 +6,13 @@ import NewsCarousel from "../components/Carousel";
 import NewsHeadlines from "../components/NewsHeadlines";
 import NewsBlock from "../components/NewsBlock";
 import FeaturedNews from "../components/FeaturedNews";
+import { useLanguage } from "../context/LanguageContext";
 import {
     Article,
     HeadlinesProps,
     CommodityPrices,
 } from "../components/news/type";
 import sanitizeHtml from "sanitize-html";
-import axios from "axios";
 
 
 interface Props {
@@ -22,86 +22,82 @@ interface Props {
 }
 
 export default function Home({ articles, headlines, commodities }: Props) {
+    const { language, t } = useLanguage();
+    
+    // State for managing news display
+    const [showAllNews, setShowAllNews] = useState(false);
+    const [showAllHeadlines, setShowAllHeadlines] = useState(false);
+    const [showAllFeatured, setShowAllFeatured] = useState(false);
+    
     // Default image URL (use a public asset or external placeholder)
     const defaultImage = "/images/default_image.jpg"; // Adjust to match your public directory structure
 
-    // // API fetch functions
-    // const fetchGoldPrice = async (): Promise<number> => {
-    //     try {
-    //         // Example using MetalPriceAPI
-    //         const response = await axios.get(
-    //             `https://api.metalpriceapi.com/v1/latest?api_key=3bab9b90ee57aac3b9b5d9e45277e892&base=XAU&currencies=USD`
-    //             // `https://api.metalpriceapi.com/v1/latest?api_key=${process.env.METAL_PRICE_API_KEY}&base=XAU&currencies=USD`
-    //         );
-    //         // Convert from per ounce to per gram (1 oz = 31.1035 g)
-    //         return response.data.rates.USD / 31.1035;
-    //     } catch (error) {
-    //         console.error("Error fetching gold price:", error);
-    //         return 58.32; // Fallback value
-    //     }
-    // };
+    // Get featured articles for hero section with safe handling
+    const featuredArticle = (articles && articles.length > 0) ? articles[0] : null;
+    
+    // News limits and display logic
+    const maxNewsLimit = 10;
+    const maxHeadlinesLimit = 10;
+    const maxFeaturedLimit = 10;
+    
+    const displayedNews = showAllNews ? articles.slice(1) : articles.slice(1, maxNewsLimit + 1);
+    const displayedHeadlines = showAllHeadlines ? headlines : headlines.slice(0, maxHeadlinesLimit);
+    const featuredArticles = articles.filter(article => article.is_featured || false).slice(0, maxFeaturedLimit);
+    const displayedFeatured = showAllFeatured ? featuredArticles : featuredArticles.slice(0, maxFeaturedLimit);
+    const breakingNews = (headlines && headlines.length > 0) ? headlines.slice(0, 5) : [];
 
-    // const fetchSilverPrice = async (): Promise<number> => {
-    //     try {
-    //         // Example using MetalPriceAPI
-    //         const response = await axios.get(
-    //             `https://api.metalpriceapi.com/v1/latest?api_key=3bab9b90ee57aac3b9b5d9e45277e892&base=XAG&currencies=USD`
-    //         );
-    //         // Convert from per ounce to per gram (1 oz = 31.1035 g)
-    //         return response.data.rates.USD / 31.1035;
-    //     } catch (error) {
-    //         console.error("Error fetching silver price:", error);
-    //         return 0.72; // Fallback value
-    //     }
-    // };
+    // Format date function
+    const formatDate = (dateString: string) => {
+        try {
+            const locale = language === 'hi' ? 'hi-IN' : 'en-IN';
+            return new Date(dateString).toLocaleDateString(locale, {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        } catch (error) {
+            return dateString;
+        }
+    };
 
-    // const fetchCrudeOilPrice = async (): Promise<number> => {
-    //     try {
-    //         // Example using Alpha Vantage
-    //         const response = await axios.get(
-    //             `https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=3DX1TEWZZ03H1DV9`
-    //             // `https://www.alphavantage.co/query?function=WTI&interval=daily&apikey=${process.env.ALPHA_VANTAGE_API_KEY}`
-    //         );
-    //         // Get the latest price from the time series
-    //         const latestData = response.data.data[0];
-    //         return parseFloat(latestData.value);
-    //     } catch (error) {
-    //         console.error("Error fetching crude oil price:", error);
-    //         return 78.45; // Fallback value
-    //     }
-    // };
-
-    // Rest of your component remains the same...
-    const sanitizeContent = (content: string) =>
-        sanitizeHtml(content, {
-            allowedTags: sanitizeHtml.defaults.allowedTags.concat([
-                "img",
-                "h1",
-                "h2",
-                "h3",
-                "h4",
-                "h5",
-                "h6",
-                "ul",
-                "ol",
-                "li",
-                "a",
-                "p",
-                "b",
-                "i",
-                "strong",
-                "em",
-            ]),
-            allowedAttributes: {
-                a: ["href", "target", "rel"],
-                img: ["src", "alt", "width", "height"],
-            },
-        });
+    // Sanitize content function with error handling
+    const sanitizeContent = (content: string) => {
+        if (!content) return '';
+        try {
+            return sanitizeHtml(content, {
+                allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+                    "img",
+                    "h1",
+                    "h2",
+                    "h3",
+                    "h4",
+                    "h5",
+                    "h6",
+                    "ul",
+                    "ol",
+                    "li",
+                    "a",
+                    "p",
+                    "b",
+                    "i",
+                    "strong",
+                    "em",
+                ]),
+                allowedAttributes: {
+                    a: ["href", "target", "rel"],
+                    img: ["src", "alt", "width", "height"],
+                },
+            });
+        } catch (error) {
+            console.error('Content sanitization error:', error);
+            return content || '';
+        }
+    };
 
     const carouselArticles = articles.filter((article) => article.is_carousel)
-        .length
+        .length > 0
         ? articles.filter((article) => article.is_carousel)
-        : articles.slice(0, 3);
+        : articles.slice(0, 5); // Show first 5 articles if no carousel articles
 
     const uniqueCategories = Array.from(
         new Set(
@@ -111,95 +107,213 @@ export default function Home({ articles, headlines, commodities }: Props) {
 
     return (
         <AppLayout currentRoute="/">
-            <Head title="News Portal" />
+            <Head title={`${t('brand_name')} - ${t('home')}`} />
 
-            <div className="grid grid-cols-1 md:grid-cols-6 text-center gap-4 my-5">
-                {commodities.map((commoditie, index) => (
-                    <CommodityCard
-                        title={commoditie.title}
-                        price={commoditie.price}
-                        // unit="/g"
-                        lastUpdated={commoditie.created_at}
-                    />
-                ))}
-            </div>
+            <div className="editorial-container">
+                {/* Breaking News Ticker */}
+                {breakingNews.length > 0 && (
+                    <div className="editorial-breaking-news">
+                        <div className="editorial-breaking-label">{t('breaking_news')}</div>
+                        <div className="editorial-breaking-content">
+                            <div className="editorial-breaking-scroll">
+                                {breakingNews.map((news, index) => (
+                                    <span key={index} className="editorial-breaking-item">
+                                        {news.title}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
-            {/* Rest of your JSX remains the same */}
-            <div>
-                <section>
-                    <h1 className="text-3xl font-bold mb-4">Latest News</h1>
-                    {carouselArticles.length > 0 ? (
-                        <NewsCarousel
-                            items={carouselArticles.map((article, index) => (
-                                <Link
-                                    key={index}
-                                    href={`/articles/${article.id}`}
-                                    className="relative w-full h-96 bg-gray-100 rounded-lg overflow-hidden block"
+                {/* 1. Main Carousel Section - First Priority */}
+                {articles && articles.length > 0 && (
+                    <section className="editorial-carousel-section">
+                        <div className="editorial-section-header">
+                            <h2 className="editorial-section-title">{t('headlines')}</h2>
+                            <div className="editorial-section-divider"></div>
+                        </div>
+                        
+                        <div className="editorial-carousel-wrapper">
+                            <NewsCarousel
+                                items={carouselArticles.map((article) => (
+                                    <Link
+                                        key={article.id}
+                                        href={`/articles/${article.id}`}
+                                        className="editorial-carousel-item"
+                                    >
+                                        <div className="editorial-carousel-image-wrapper">
+                                            <img
+                                                src={article.image || defaultImage}
+                                                alt={article.title}
+                                                className="editorial-carousel-image"
+                                            />
+                                            <div className="editorial-carousel-overlay"></div>
+                                        </div>
+                                        <div className="editorial-carousel-content">
+                                            <div className="editorial-carousel-category">
+                                                {article.category.name}
+                                            </div>
+                                            <h3 className="editorial-carousel-title">{article.title}</h3>
+                                            <p className="editorial-carousel-summary">
+                                                {sanitizeContent(article.content).substring(0, 120)}...
+                                            </p>
+                                            <div className="editorial-carousel-meta">
+                                                <span className="editorial-carousel-date">
+                                                    {formatDate(article.created_at)}
+                                                </span>
+                                                <span className="editorial-carousel-readmore">
+                                                    पढ़ें →
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                ))}
+                                autoPlay={true}
+                                interval={5000}
+                                showControls={true}
+                                showIndicators={true}
+                                adaptiveHeight={true}
+                                maxHeight="600px"
+                                minHeight="400px"
+                            />
+                        </div>
+                    </section>
+                )}
+
+                {/* 2. Headlines Section */}
+                {displayedHeadlines.length > 0 && (
+                    <section className="editorial-headlines-section">
+                        <div className="editorial-section-header">
+                            <h2 className="editorial-section-title">मुख्य शीर्षक</h2>
+                            <div className="editorial-section-divider"></div>
+                        </div>
+                        
+                        <div className="editorial-headlines-grid">
+                            {displayedHeadlines.map((headline, index) => (
+                                <div key={index} className="editorial-headline-item">
+                                    <h3 className="editorial-headline-title">{headline.title}</h3>
+                                    <span className="editorial-headline-meta">
+                                        {formatDate(headline.created_at)}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        {headlines.length > maxHeadlinesLimit && (
+                            <div className="editorial-see-more">
+                                <button 
+                                    onClick={() => setShowAllHeadlines(!showAllHeadlines)}
+                                    className="editorial-see-more-btn"
                                 >
-                                    <img
-                                        src={
-                                            article.image
-                                                ? article.image
-                                                : defaultImage
-                                        }
-                                        alt={article.title}
-                                        className="w-full h-full object-cover"
-                                    />
+                                    {showAllHeadlines ? t('show_less') : t('see_more')} ({headlines.length - maxHeadlinesLimit} {t('more')})
+                                </button>
+                            </div>
+                        )}
+                    </section>
+                )}
 
-                                    <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-4">
-                                        <h2 className="text-2xl font-bold mb-2">
-                                            {article.title}
-                                        </h2>
-                                        <div
-                                            className="text-sm line-clamp-3"
-                                            dangerouslySetInnerHTML={{
-                                                __html: sanitizeContent(
-                                                    article.content
-                                                ),
-                                            }}
+                {/* 3. Featured News Section */}
+                {featuredArticles.length > 0 && (
+                    <section className="editorial-featured-section">
+                        <div className="editorial-section-header">
+                            <h2 className="editorial-section-title">{t('featured_news')}</h2>
+                            <div className="editorial-section-divider"></div>
+                        </div>
+                        
+                        <div className="editorial-featured-grid">
+                            {displayedFeatured.map((article) => (
+                                <Link
+                                    key={article.id}
+                                    href={`/articles/${article.id}`}
+                                    className="editorial-featured-card"
+                                >
+                                    <div className="editorial-featured-image-wrapper">
+                                        <img
+                                            src={article.image || defaultImage}
+                                            alt={article.title}
+                                            className="editorial-featured-image"
                                         />
+                                        <div className="editorial-featured-category">
+                                            {article.category.name}
+                                        </div>
+                                    </div>
+                                    <div className="editorial-featured-content">
+                                        <h3 className="editorial-featured-title">{article.title}</h3>
+                                        <p className="editorial-featured-excerpt">
+                                            {sanitizeContent(article.content).substring(0, 100)}...
+                                        </p>
+                                        <span className="editorial-featured-date">
+                                            {formatDate(article.created_at)}
+                                        </span>
                                     </div>
                                 </Link>
                             ))}
-                            autoPlay={true}
-                            interval={3000}
-                            showControls={true}
-                            showIndicators={true}
-                        />
-                    ) : (
-                        <p className="text-gray-500">
-                            No carousel articles available.
-                        </p>
-                    )}
-                </section>
+                        </div>
+                        
+                        {featuredArticles.length > maxFeaturedLimit && (
+                            <div className="editorial-see-more">
+                                <button 
+                                    onClick={() => setShowAllFeatured(!showAllFeatured)}
+                                    className="editorial-see-more-btn"
+                                >
+                                    {showAllFeatured ? t('show_less') : t('see_more')} ({featuredArticles.length - maxFeaturedLimit} {t('more')})
+                                </button>
+                            </div>
+                        )}
+                    </section>
+                )}
 
-                {/* news haeline section */}
-                <NewsHeadlines headlines={headlines} />
-
-                {/* feature news section */}
-                <FeaturedNews
-                    articles={articles.filter((article) => article.is_featured)}
-                />
-
-                {/* news block section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                    {uniqueCategories.length > 0 ? (
-                        uniqueCategories.map((category, index) => (
-                            <NewsBlock
-                                key={index}
-                                title={`${category} News`}
-                                category={category.toLowerCase()}
-                                articles={articles
-                                    .filter((a) => a.category.name === category)
-                                    .slice(0, 4)}
-                            />
-                        ))
-                    ) : (
-                        <p className="text-gray-500">
-                            No categories available.
-                        </p>
-                    )}
-                </div>
+                {/* 4. Other News Section */}
+                {displayedNews.length > 0 && (
+                    <section className="editorial-other-news-section">
+                        <div className="editorial-section-header">
+                            <h2 className="editorial-section-title">{t('other_news')}</h2>
+                            <div className="editorial-section-divider"></div>
+                        </div>
+                        
+                        <div className="editorial-other-news-grid">
+                            {displayedNews.map((article) => (
+                                <Link
+                                    key={article.id}
+                                    href={`/articles/${article.id}`}
+                                    className="editorial-other-news-card"
+                                >
+                                    <div className="editorial-other-news-image-wrapper">
+                                        <img
+                                            src={article.image || defaultImage}
+                                            alt={article.title}
+                                            className="editorial-other-news-image"
+                                        />
+                                        <div className="editorial-other-news-category">
+                                            {article.category.name}
+                                        </div>
+                                    </div>
+                                    <div className="editorial-other-news-content">
+                                        <h3 className="editorial-other-news-title">{article.title}</h3>
+                                        <p className="editorial-other-news-excerpt">
+                                            {sanitizeContent(article.content).substring(0, 80)}...
+                                        </p>
+                                        <span className="editorial-other-news-date">
+                                            {formatDate(article.created_at)}
+                                        </span>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                        
+                        {articles.length > maxNewsLimit + 1 && (
+                            <div className="editorial-see-more">
+                                <button 
+                                    onClick={() => setShowAllNews(!showAllNews)}
+                                    className="editorial-see-more-btn"
+                                >
+                                    {showAllNews ? t('show_less') : t('see_more')} ({articles.length - maxNewsLimit - 1} {t('more')})
+                                </button>
+                            </div>
+                        )}
+                    </section>
+                )}
             </div>
         </AppLayout>
     );
