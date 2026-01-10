@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import Advertisement from "../components/Advertisment";
 import axios from "axios";
 
@@ -38,57 +39,85 @@ export default function AppLayout({ children, currentRoute }: MainLayoutProps) {
     const rightAds = advertisements.slice(midPoint);
 
     return (
-        <div className="flex flex-col min-h-screen">
+        <div className="flex flex-col min-h-screen bg-gray-50" style={{ paddingTop: '7rem' }}>
             {/* Navbar */}
             <Navbar currentRoute={currentRoute} />
 
             {/* Main Content Area */}
-            <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
-                {/* Mobile-only Advertisements - Displayed at the top on mobile */}
-                <div className="block lg:hidden w-full px-4 py-1 mt-14">
+            <div className="flex flex-col lg:flex-row flex-1 overflow-hidden pt-2">
+                {/* Mobile-only Advertisements - Vertical stack on mobile */}
+                <div className="block lg:hidden w-full mb-4">
                     {advertisements.length > 0 ? (
-                        advertisements.map((ad) => (
-                            <Advertisement
-                                key={ad.id}
-                                adv_image={ad.adv_image ?? undefined}
-                                title={ad.title}
-                            />
-                        ))
+                        <div className="space-y-6 px-4">
+                            {advertisements.map((ad) => (
+                                <div key={ad.id} className="w-full">
+                                    <Advertisement
+                                        adv_image={ad.adv_image ?? undefined}
+                                        title={ad.title}
+                                        className="mb-0"
+                                    />
+                                </div>
+                            ))}
+                        </div>
                     ) : (
-                        <Advertisement
-                            adv_image={undefined}
-                            title="Placeholder Ad"
-                        />
+                        <div className="px-4">
+                            <Advertisement
+                                adv_image={undefined}
+                                title="Placeholder Ad"
+                                className="w-full"
+                            />
+                        </div>
                     )}
                 </div>
 
                 {/* Left Advertisements - Hidden on mobile, scrollable on desktop */}
-                <div className="hidden lg:block lg:w-1/6 fixed left-0 top-16 bottom-0 z-40 overflow-y-auto space-y-2">
-                    {leftAds.map((ad) => (
-                        <Advertisement
-                            key={ad.id}
-                            adv_image={ad.adv_image ?? undefined}
-                            title={ad.title}
-                        />
-                    ))}
+                <div className="hidden lg:block lg:w-1/6 overflow-y-auto">
+                    <div className="p-1 space-y-2 sticky top-4">
+                        {leftAds.map((ad) => (
+                            <Advertisement
+                                key={ad.id}
+                                adv_image={ad.adv_image ?? undefined}
+                                title={ad.title}
+                                className="mb-0"
+                            />
+                        ))}
+                        {leftAds.length === 0 && (
+                            <Advertisement
+                                adv_image={undefined}
+                                title="Ad Space Available"
+                            />
+                        )}
+                    </div>
                 </div>
 
                 {/* Main Content - Full width on mobile, centered on desktop */}
-                <main className="w-full lg:w-4/6 mx-auto overflow-y-auto px-4 pt-4 lg:pt-20 pb-4">
+                <main className="w-full lg:w-4/6 overflow-y-auto px-1 lg:px-3 pb-8 pt-2">
                     {children}
                 </main>
 
                 {/* Right Advertisements - Hidden on mobile, scrollable on desktop */}
-                <div className="hidden lg:block lg:w-1/6 fixed right-0 top-16 bottom-0 z-40 overflow-y-auto space-y-2">
-                    {rightAds.map((ad) => (
-                        <Advertisement
-                            key={ad.id}
-                            adv_image={ad.adv_image ?? undefined}
-                            title={ad.title}
-                        />
-                    ))}
+                <div className="hidden lg:block lg:w-1/6 overflow-y-auto">
+                    <div className="p-1 space-y-2 sticky top-4">
+                        {rightAds.map((ad) => (
+                            <Advertisement
+                                key={ad.id}
+                                adv_image={ad.adv_image ?? undefined}
+                                title={ad.title}
+                                className="mb-0"
+                            />
+                        ))}
+                        {rightAds.length === 0 && (
+                            <Advertisement
+                                adv_image={undefined}
+                                title="Ad Space Available"
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
+
+            {/* Footer */}
+            <Footer />
         </div>
     );
 }

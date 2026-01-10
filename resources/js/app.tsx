@@ -1,4 +1,5 @@
 import { createInertiaApp } from '@inertiajs/react';
+import { LanguageProvider } from './context/LanguageContext';
 
 createInertiaApp({
   resolve: (name) => {
@@ -11,7 +12,11 @@ createInertiaApp({
   },
   setup({ el, App, props }) {
     const root = createRoot(el);
-    root.render(<App {...props} />);
+    root.render(
+      <LanguageProvider>
+        <App {...props} />
+      </LanguageProvider>
+    );
   },
 }).catch((error) => {
   console.error('Inertia app error:', error); // Catch errors

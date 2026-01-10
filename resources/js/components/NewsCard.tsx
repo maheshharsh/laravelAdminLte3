@@ -2,6 +2,7 @@ import { Link } from "@inertiajs/react";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Clock } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 import { Article } from "./news/type";
 
 interface NewsCardProps {
@@ -9,8 +10,24 @@ interface NewsCardProps {
 }
 
 export default function NewsCard({ article }: NewsCardProps) {
+    const { language } = useLanguage();
+    
     // Default image URL (use a public asset or external placeholder)
     const defaultImage = "/images/default_image.jpg"; // Adjust to match your public directory structure
+
+    // Format date based on language
+    const formatDate = (dateString: string) => {
+        try {
+            const locale = language === 'hi' ? 'hi-IN' : 'en-IN';
+            return new Date(dateString).toLocaleDateString(locale, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        } catch (error) {
+            return dateString;
+        }
+    };
 
     return (
         <Link  href={`/articles/${article.id}`}
@@ -45,7 +62,7 @@ export default function NewsCard({ article }: NewsCardProps) {
                             {/* Timestamp */}
                             <div className="flex items-center mt-3 text-xs sm:text-xs text-gray-200">
                                 <Clock className="h-3 w-3 mr-1" />
-                                {article.published_at}
+                                {formatDate(article.published_at)}
                             </div>
                         </CardContent>
                     </div>

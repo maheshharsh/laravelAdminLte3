@@ -4,21 +4,28 @@ import AppLayout from "../../layouts/AppLayout";
 import { Badge } from "../../components/ui/badge";
 import { Clock } from "lucide-react";
 import sanitizeHtml from "sanitize-html";
-import NewsCarousel from "../../components/Carousel";
+import ImageCarousel from "../../components/ImageCarousel";
+import VideoPlayer from "../../Components/VideoPlayer";
+import { useLanguage } from "../../context/LanguageContext";
 
 // Extend Article type to include media
 interface Media {
   path: string;
+  file_name: string;
   alt?: string;
 }
 
 interface Article {
+  id: number;
   title: string;
   content: string;
   image?: string;
   category_name: string;
   published_at: string;
   media: Media[];
+  video_file?: string;
+  video_thumbnail?: string;
+  video_description?: string;
 }
 
 interface ShowProps {
@@ -28,6 +35,8 @@ interface ShowProps {
 const defaultImage = "/images/default_image.jpg";
 
 export default function Show({ article }: ShowProps) {
+  console.log(article.media);
+  const { t } = useLanguage();
 
   const shareUrl = `${window.location.origin}/articles/${article.id}`;
 
@@ -135,24 +144,42 @@ export default function Show({ article }: ShowProps) {
         </div>
 
         {/* News Carousel */}
-        {article.media.length > 0 ? (
-          <NewsCarousel
-            items={article.media.map((media, index) => (
-              <img
-                key={index}
-                src={media.path ? media.path : defaultImage}
-                alt={media.alt || `${article.title} media ${index + 1}`}
-                className="w-full h-64 object-cover rounded-xl"
-                onError={handleImageError}
-              />
-            ))}
+        {article.media.length > 0 && (
+          <ImageCarousel
+            images={article.media.map((media, index) => ({
+              src: media.file_name ? media.file_name : defaultImage,
+              alt: media.alt || `${article.title} media ${index + 1}`,
+              title: media.alt || `Media ${index + 1}`
+            }))}
             autoPlay={true}
             interval={3000}
             showControls={true}
             showIndicators={true}
+            adaptiveHeight={true}
+            maxHeight={600}
+            minHeight={250}
+            objectFit="contain"
+            className="rounded-xl"
           />
-        ) : (
-          undefined
+        )}
+
+        {/* Video Section */}
+        {article.video_file && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+              <svg className="w-6 h-6 mr-2 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+              {t('video_news')}
+            </h2>
+            <VideoPlayer
+              videoUrl={article.video_file}
+              thumbnailUrl={article.video_thumbnail}
+              title={article.title}
+              description={article.video_description}
+              className="w-full max-w-4xl mx-auto"
+            />
+          </div>
         )}
 
         {/* Content Section */}

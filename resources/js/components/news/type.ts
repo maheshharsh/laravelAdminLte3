@@ -13,6 +13,9 @@ export interface Article {
     published_at: string;
     excerpt: string;
     category_name: string;
+    video_file?: string;
+    video_thumbnail?: string;
+    video_description?: string;
 }
 
 export interface HeadlinesProps {
@@ -22,6 +25,8 @@ export interface HeadlinesProps {
     category_name: string;
     slug: string;
     time?: string;
+    created_at: string;
+    published_at?: string;
 }
 export interface CommodityPrices {
     title: string;

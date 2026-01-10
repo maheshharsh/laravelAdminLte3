@@ -106,6 +106,20 @@ class ArticleController extends BaseController
                 $request->merge(['featured_image' => $filePath]);
             }
 
+            // Handle video file
+            if ($request->hasFile('video_file')) {
+                $videoFile = $request->file('video_file');
+                $videoPath = CommonHelper::uploadFile($videoFile, 'storage/videos');
+                $request->merge(['video_file' => '/storage/videos/' . basename($videoPath)]);
+            }
+
+            // Handle video thumbnail
+            if ($request->hasFile('video_thumbnail')) {
+                $thumbnailFile = $request->file('video_thumbnail');
+                $thumbnailPath = CommonHelper::uploadFile($thumbnailFile, 'storage/video-thumbnails');
+                $request->merge(['video_thumbnail' => '/storage/video-thumbnails/' . basename($thumbnailPath)]);
+            }
+
             // Create article
             $article = Article::create($request->all());
 
@@ -178,8 +192,32 @@ class ArticleController extends BaseController
                 $article->featured_image = $filePath;
             }
 
+            // Update video file
+            if ($request->hasFile('video_file')) {
+                // Delete old video file
+                if (!empty($article->video_file) && Storage::exists($article->video_file)) {
+                    Storage::delete($article->video_file);
+                }
+
+                $videoFile = $request->file('video_file');
+                $videoPath = CommonHelper::uploadFile($videoFile, 'storage/videos');
+                $article->video_file = '/storage/videos/' . basename($videoPath);
+            }
+
+            // Update video thumbnail
+            if ($request->hasFile('video_thumbnail')) {
+                // Delete old thumbnail
+                if (!empty($article->video_thumbnail) && Storage::exists($article->video_thumbnail)) {
+                    Storage::delete($article->video_thumbnail);
+                }
+
+                $thumbnailFile = $request->file('video_thumbnail');
+                $thumbnailPath = CommonHelper::uploadFile($thumbnailFile, 'storage/video-thumbnails');
+                $article->video_thumbnail = '/storage/video-thumbnails/' . basename($thumbnailPath);
+            }
+
             // Update fields
-            $article->fill($request->except(['image', 'gallery_images', 'delete_gallery_images']));
+            $article->fill($request->except(['image', 'gallery_images', 'delete_gallery_images', 'video_file', 'video_thumbnail']));
 
             // Checkbox handling
             $article->is_featured = $request->has('is_featured');
@@ -283,6 +321,12 @@ class ArticleController extends BaseController
     {
         // dd('asdf');
         $articles = Article::with('category')
+            ->select([
+                'id', 'title', 'slug', 'content', 'featured_image as image', 
+                'category_id', 'is_featured', 'is_carousel', 'is_published',
+                'created_at', 'published_at', 'sub_content as excerpt',
+                'video_file', 'video_thumbnail', 'video_description'
+            ])
             ->where('is_published', true)
             ->latest()
             ->get();
@@ -343,7 +387,17 @@ class ArticleController extends BaseController
 
     public function showData(Request $request)
     {
-        $article = Article::with('media')->findorFail($request->id);
+        $article = Article::with('media')
+            ->select([
+                'id', 'title', 'slug', 'content', 'featured_image as image',
+                'category_id', 'is_featured', 'is_carousel', 'is_published',
+                'created_at', 'published_at', 'sub_content as excerpt',
+                'video_file', 'video_thumbnail', 'video_description'
+            ])
+            ->findorFail($request->id);
+
+        // Add category name
+        $article->category_name = $article->category->name ?? 'Uncategorized';
 
         // Add `url` attribute for each media in JSON
         $article->media->each->append('url');
@@ -352,7 +406,7 @@ class ArticleController extends BaseController
             'article' => $article,
         ])->withViewData([
             'article' => $article, // for Blade
-        ]);;
+        ]);
     }
 
     public function category(Request $request)

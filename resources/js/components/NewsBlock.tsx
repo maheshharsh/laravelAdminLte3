@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "@inertiajs/react";
 import { Article } from "./news/type";
+import { useLanguage } from "../context/LanguageContext";
 import sanitizeHtml from "sanitize-html";
 
 interface NewsBlockProps {
@@ -10,6 +11,8 @@ interface NewsBlockProps {
 }
 
 function NewsBlock({ title, category, articles }: NewsBlockProps) {
+    const { language, t } = useLanguage();
+    
     // Sanitize HTML content for safe rendering
     const sanitizeContent = (content: string) =>
         sanitizeHtml(content, {
@@ -69,6 +72,17 @@ function NewsBlock({ title, category, articles }: NewsBlockProps) {
                                     }}
                                 />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                                
+                                {/* Video Indicator */}
+                                {articles[0].video_file && (
+                                    <div className="absolute top-4 right-4 bg-red-600 text-white px-2 py-1 rounded-lg text-xs font-semibold flex items-center">
+                                        <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M8 5v14l11-7z"/>
+                                        </svg>
+                                        {t('video')}
+                                    </div>
+                                )}
+                                
                                 <div className="absolute bottom-0 left-0 p-4 text-white">
                                     <span className="bg-red-600 text-xs font-semibold px-2 py-1 rounded">
                                         {articles[0].category_name}
@@ -96,7 +110,7 @@ function NewsBlock({ title, category, articles }: NewsBlockProps) {
                                 key={article.id}
                                 className="flex gap-4 pb-4 border-b border-gray-200 last:border-0 group"
                             >
-                                <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded">
+                                <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded relative">
                                     <img
                                         src={
                                             article.image ||
@@ -109,6 +123,16 @@ function NewsBlock({ title, category, articles }: NewsBlockProps) {
                                             e.currentTarget.src = defaultImage;
                                         }}
                                     />
+                                    {/* Video Indicator for smaller items */}
+                                    {article.video_file && (
+                                        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+                                            <div className="bg-red-600 text-white rounded-full p-1">
+                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M8 5v14l11-7z"/>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="flex-1">
                                     <h5 className="font-semibold text-gray-800 group-hover:text-red-600 transition-colors">
@@ -129,7 +153,7 @@ function NewsBlock({ title, category, articles }: NewsBlockProps) {
                                         {article.published_at}
                                     </p>
                                     <span className="inline-block mt-2 text-xs font-medium px-2 py-1 bg-gray-100 rounded-full">
-                                        #{category.toLowerCase()} trending
+                                        #{category.toLowerCase()} {t('trending')}
                                     </span>
                                 </div>
                             </div>

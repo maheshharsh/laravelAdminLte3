@@ -1,0 +1,63 @@
+/* Advertisement specific styles - v1.2 */
+.advertisement-container {
+    transition: all 0.3s ease-in-out;
+}
+
+.advertisement-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.advertisement-image {
+    transition: transform 0.3s ease-in-out;
+}
+
+.advertisement-container:hover .advertisement-image {
+    transform: scale(1.05);
+}
+
+/* Custom scrollbar for better mobile experience */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Responsive aspect ratios */
+@media (max-width: 640px) {
+    .ad-mobile {
+        aspect-ratio: 16 / 9;
+        min-height: 160px !important;
+        height: 160px;
+    }
+    
+    /* Mobile vertical advertisement height */
+    .advertisement-container .w-full {
+        min-height: 160px !important;
+    }
+}
+
+@media (min-width: 641px) and (max-width: 1023px) {
+    .ad-tablet {
+        aspect-ratio: 16 / 9;
+        height: 192px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .ad-desktop {
+        aspect-ratio: 1 / 1;
+    }
+}
