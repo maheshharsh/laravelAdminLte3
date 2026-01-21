@@ -20,7 +20,7 @@
                     <th></th>
                     <th>{{ __('Title') }}</th>
                     <th>{{ __('Content') }}</th>
-                    <th>{{ __('category_id') }}</th>
+                    <th>{{ __('Category Name') }}</th>
                     <th>{{ __('Actions') }}</th>
                 </tr>
             </thead>
@@ -29,7 +29,7 @@
                     <td></td>
                     <td><input type="text" class="form-control" placeholder="{{ __('Name') }}" data-index="1" /></td>
                     <td><input type="text" class="form-control" placeholder="{{ __('Content') }}" data-index="2" /></td>
-                    <td><input type="text" class="form-control" placeholder="{{ __('category_id') }}" data-index="2" /></td>
+                    <td><input type="text" class="form-control" placeholder="{{ __('') }}" data-index="2" /></td>
                     <td></td>
                 </tr>
             </thead>
@@ -63,7 +63,7 @@
                 {data: 'DT_RowIndex', name: 'DT_RowIndex', orderable: false, searchable: false},
                 {data: 'title', name: 'title'},
                 {data: 'content', name: 'content'},
-                {data: 'category_id', name: 'category_id'},
+                {data: 'category_name', name: ''},
                 {data: 'action', name: 'action' , orderable: false, searchable: false},
             ],
         });

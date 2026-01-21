@@ -101,6 +101,14 @@
   white-space: nowrap;
 }
 
+@media (prefers-color-scheme: dark) {
+  .editorial-breaking-label {
+    background: rgba(30, 41, 59, 0.9);
+    color: var(--editorial-white);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+}
+
 .editorial-breaking-content {
   flex: 1;
   overflow: hidden;
@@ -421,12 +429,12 @@
 }
 
 .editorial-carousel-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    line-height: 1.3;
-    margin-bottom: 1rem;
-    color: var(--editorial-primary);
-    font-family: var(--editorial-font-hindi);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  color: var(--editorial-white); /* Changed to white for better visibility in dark mode */
+  font-family: var(--editorial-font-hindi);
 }
 
 .editorial-carousel-summary {
@@ -762,17 +770,24 @@
 }
 
 .editorial-other-news-category {
-    position: absolute;
-    top: 0.5rem;
-    left: 0.5rem;
-    background: rgba(44, 24, 16, 0.8);
-    color: var(--editorial-white);
-    padding: 0.2rem 0.6rem;
-    border-radius: 15px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  background: rgba(44, 24, 16, 0.8);
+  color: var(--editorial-white); /* Adjust this color for dark mode */
+  padding: 0.2rem 0.6rem;
+  border-radius: 15px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Dark mode variant */
+@media (prefers-color-scheme: dark) {
+  .editorial-other-news-category {
+    color: var(--editorial-primary); /* Change this to a suitable color for dark mode */
+  }
 }
 
 .editorial-other-news-content {
@@ -926,7 +941,7 @@
 
 .editorial-breaking-label {
   background: rgba(255, 255, 255, 0.9);
-  color: var(--editorial-primary);
+  color: var(--editorial-primary); /* Change this to a darker color for dark mode */
   padding: 6px 16px;
   font-weight: 700;
   font-size: 0.75rem;
@@ -935,6 +950,15 @@
   letter-spacing: 0.5px;
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Add a dark mode variant */
+@media (prefers-color-scheme: dark) {
+  .editorial-breaking-label {
+    background: rgba(0, 0, 0, 0.7); /* Darker background for dark mode */
+    color: rgba(255, 255, 255, 0.9); /* Lighter text color for better contrast */
+    border: 1px solid rgba(255, 255, 255, 0.5); /* Adjust border for dark mode */
+  }
 }
 
 /* News Grid Layout */

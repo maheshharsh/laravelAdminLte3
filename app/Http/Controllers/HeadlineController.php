@@ -37,7 +37,9 @@ class HeadlineController extends BaseController
         return response()->json(['message' => 'Unauthorized'], 401);
         }
         $selectCol = 'headlines.' . Headline::ID . ',' . 'headlines.' . Headline::TITLE. ',' . 'headlines.' . Headline::CONTENT . ',' . 'headlines.' . Headline::CATEGORY_ID;
-        $headline = Headline::selectRaw($selectCol)->orderBy(Headline::ID);
+        $headline = Headline::selectRaw($selectCol)
+            ->with('category')
+            ->orderBy(Headline::ID);
 
         $canView = Gate::allows(Headline::VIEW_HEADLINE);
         $canUpdate = Gate::allows(Headline::UPDATE_HEADLINE);
@@ -51,7 +53,7 @@ class HeadlineController extends BaseController
                     $query->whereRaw($sql, ["%{$keyword}%"]);
                 })
                 ->filterColumn('category_id', function ($query, $keyword) {
-                    $sql = "headlines.category_id like ?";
+                    $sql = "categories.name like ?";
                     $query->whereRaw($sql, ["%{$keyword}%"]);
                 })
                 ->filterColumn('content', function ($query, $keyword) {
@@ -61,6 +63,9 @@ class HeadlineController extends BaseController
                 ->filterColumn('slug', function ($query, $keyword) {
                     $sql = "headlines.slug like ?";
                     $query->whereRaw($sql, ["%{$keyword}%"]);
+                })
+                ->addColumn('category_name', function ($headline) {
+                    return $headline->category->name ?? 'N/A';
                 })
                 ->editColumn('action', function ($headline) use ($canView, $canUpdate, $canDelete) {
                     $action = '';
