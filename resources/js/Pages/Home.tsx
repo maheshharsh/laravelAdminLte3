@@ -214,12 +214,16 @@ export default function Home({ articles, headlines, commodities }: Props) {
                         
                         <div className="editorial-headlines-grid">
                             {displayedHeadlines.map((headline, index) => (
-                                <div key={index} className="editorial-headline-item">
+                                <Link
+                                    key={index}
+                                    href={`/headline/${headline.id}`}
+                                    className="editorial-headline-item"
+                                >
                                     <h3 className="editorial-headline-title">{headline.title}</h3>
                                     <span className="editorial-headline-meta">
                                         {formatDate(headline.created_at)}
                                     </span>
-                                </div>
+                                </Link>
                             ))}
                         </div>
                         
