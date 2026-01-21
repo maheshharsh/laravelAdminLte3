@@ -126,6 +126,26 @@ export default function Home({ articles, headlines, commodities }: Props) {
                     </div>
                 )}
 
+                {/* Commodities/Market Prices Section */}
+                {commodities && commodities.length > 0 && (
+                    <section className="editorial-commodities-section">
+                        <div className="editorial-section-header">
+                            <h2 className="editorial-section-title">{t('brand_name')} - {t('commodities')}</h2>
+                            <div className="editorial-section-divider"></div>
+                        </div>
+                        
+                        <div className="editorial-commodities-grid">
+                            {commodities.map((commodity, index) => (
+                                <div key={index} className="commodity-card">
+                                    <h3>{commodity.title}</h3>
+                                    <p className="price">₹{parseFloat(String(commodity.price)).toFixed(2)}</p>
+                                    {/* <p className="updated">{formatDate(commodity.updated_at)}</p> */}
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )}
+
                 {/* 1. Main Carousel Section - First Priority */}
                 {articles && articles.length > 0 && (
                     <section className="editorial-carousel-section">

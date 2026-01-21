@@ -4,6 +4,11 @@
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
         </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#" id="dark-mode-toggle" role="button" title="Toggle Dark Mode">
+                <i class="fas fa-moon"></i>
+            </a>
+        </li>
     </ul>
     <!-- Settings Dropdown -->
     <div class="hidden sm:flex sm:items-center sm:ms-6">
