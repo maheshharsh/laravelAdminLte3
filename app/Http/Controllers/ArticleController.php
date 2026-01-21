@@ -321,12 +321,6 @@ class ArticleController extends BaseController
     {
         // dd('asdf');
         $articles = Article::with('category')
-            ->select([
-                'id', 'title', 'slug', 'content', 'featured_image as image', 
-                'category_id', 'is_featured', 'is_carousel', 'is_published',
-                'created_at', 'published_at', 'sub_content as excerpt',
-                'video_file', 'video_thumbnail', 'video_description'
-            ])
             ->where('is_published', true)
             ->latest()
             ->get();
@@ -388,12 +382,12 @@ class ArticleController extends BaseController
     public function showData(Request $request)
     {
         $article = Article::with('media')
-            ->select([
-                'id', 'title', 'slug', 'content', 'featured_image as image',
-                'category_id', 'is_featured', 'is_carousel', 'is_published',
-                'created_at', 'published_at', 'sub_content as excerpt',
-                'video_file', 'video_thumbnail', 'video_description'
-            ])
+            // ->select([
+            //     'id', 'title', 'slug', 'content', 'featured_image as image',
+            //     'category_id', 'is_featured', 'is_carousel', 'is_published',
+            //     'created_at', 'published_at', 'sub_content as excerpt',
+            //     'video_file', 'video_thumbnail', 'video_description'
+            // ])
             ->findorFail($request->id);
 
         // Add category name

@@ -217,15 +217,15 @@
                 </div>
 
                 <!-- Video Section -->
-                <div class="col-md-12 mt-4">
-                    <div class="card">
-                        <div class="card-header">
+                <!-- <div class="col-md-12 mt-4"> -->
+                    <!-- <div class="card"> -->
+                        <!-- <div class="card-header">
                             <h5 class="card-title mb-0">{{ __('Video Content (Optional)') }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
+                        </div> -->
+                        <!-- <div class="card-body"> -->
+                            <!-- <div class="row"> -->
                                 <!-- Video File -->
-                                <div class="form-group col-md-6">
+                                <!-- <div class="form-group col-md-6">
                                     <label>{{ __('Video File') }}</label>
                                     <input type="file" class="form-control @error('video_file') is-invalid @enderror" 
                                            name="video_file" accept="video/mp4,video/avi,video/mov,video/wmv,video/flv,video/webm,video/mkv">
@@ -244,10 +244,10 @@
                                         <p class="text-muted small mt-1">Current video file</p>
                                     </div>
                                     @endif
-                                </div>
+                                </div> -->
 
                                 <!-- Video Thumbnail -->
-                                <div class="form-group col-md-6">
+                                <!-- <div class="form-group col-md-6">
                                     <label>{{ __('Video Thumbnail') }}</label>
                                     <input type="file" class="form-control @error('video_thumbnail') is-invalid @enderror" 
                                            name="video_thumbnail" accept="image/*">
@@ -265,10 +265,10 @@
                                         <p class="text-muted small mt-1">Current video thumbnail</p>
                                     </div>
                                     @endif
-                                </div>
+                                </div> -->
 
                                 <!-- Video Description -->
-                                <div class="form-group col-md-12">
+                                <!-- <div class="form-group col-md-12">
                                     <label>{{ __('Video Description') }}</label>
                                     <textarea class="form-control @error('video_description') is-invalid @enderror" 
                                         name="video_description" 
@@ -279,11 +279,11 @@
                                     @error('video_description')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                </div> -->
+                            <!-- </div> -->
+                        <!-- </div> -->
+                    <!-- </div> -->
+                <!-- </div> -->
             </div>
         </div>
 

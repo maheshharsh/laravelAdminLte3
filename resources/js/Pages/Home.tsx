@@ -167,6 +167,9 @@ export default function Home({ articles, headlines, commodities }: Props) {
                                                 src={article.image || defaultImage}
                                                 alt={article.title}
                                                 className="editorial-carousel-image"
+                                                onError={(e) => {
+                                                    e.currentTarget.src = defaultImage;
+                                                }}
                                             />
                                             <div className="editorial-carousel-overlay"></div>
                                         </div>
@@ -253,6 +256,9 @@ export default function Home({ articles, headlines, commodities }: Props) {
                                             src={article.image || defaultImage}
                                             alt={article.title}
                                             className="editorial-featured-image"
+                                            onError={(e) => {
+                                                e.currentTarget.src = defaultImage;
+                                            }}
                                         />
                                         <div className="editorial-featured-category">
                                             {article.category.name}
@@ -304,6 +310,9 @@ export default function Home({ articles, headlines, commodities }: Props) {
                                             src={article.image || defaultImage}
                                             alt={article.title}
                                             className="editorial-other-news-image"
+                                            onError={(e) => {
+                                                e.currentTarget.src = defaultImage;
+                                            }}
                                         />
                                         <div className="editorial-other-news-category">
                                             {article.category.name}
