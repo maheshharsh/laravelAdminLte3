@@ -104,7 +104,7 @@ export default function Home({ articles, headlines, commodities }: Props) {
             articles.map((article) => article.category.name).filter(Boolean)
         )
     );
-
+    
     return (
         <AppLayout currentRoute="/">
             <Head title={`${t('brand_name')} - ${t('home')}`} />
@@ -147,7 +147,7 @@ export default function Home({ articles, headlines, commodities }: Props) {
                 )}
 
                 {/* 1. Main Carousel Section - First Priority */}
-                {articles && articles.length > 0 && (
+                {articles && articles.length > 0 && (                    
                     <section className="editorial-carousel-section">
                         <div className="editorial-section-header">
                             <h2 className="editorial-section-title">{t('headlines')}</h2>
@@ -167,9 +167,9 @@ export default function Home({ articles, headlines, commodities }: Props) {
                                                 src={article.image || defaultImage}
                                                 alt={article.title}
                                                 className="editorial-carousel-image"
-                                                onError={(e) => {
-                                                    e.currentTarget.src = defaultImage;
-                                                }}
+                                                // onError={(e) => {
+                                                //     e.currentTarget.src = defaultImage;
+                                                // }}
                                             />
                                             <div className="editorial-carousel-overlay"></div>
                                         </div>
@@ -260,9 +260,9 @@ export default function Home({ articles, headlines, commodities }: Props) {
                                             src={article.image || defaultImage}
                                             alt={article.title}
                                             className="editorial-featured-image"
-                                            onError={(e) => {
-                                                e.currentTarget.src = defaultImage;
-                                            }}
+                                            // onError={(e) => {
+                                            //     e.currentTarget.src = defaultImage;
+                                            // }}
                                         />
                                         <div className="editorial-featured-category">
                                             {article.category.name}
@@ -314,9 +314,6 @@ export default function Home({ articles, headlines, commodities }: Props) {
                                             src={article.image || defaultImage}
                                             alt={article.title}
                                             className="editorial-other-news-image"
-                                            onError={(e) => {
-                                                e.currentTarget.src = defaultImage;
-                                            }}
                                         />
                                         <div className="editorial-other-news-category">
                                             {article.category.name}
